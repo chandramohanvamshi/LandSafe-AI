@@ -1,3 +1,7 @@
+/* =========================================
+   LANDING PAGE
+   ========================================= */
+
 .landing-page {
   width: 100%;
   min-height: 100vh;
@@ -5,12 +9,40 @@
   overflow-x: hidden;
 }
 
-/* Smooth scroll behavior */
+
+/* =========================================
+   SMOOTH SCROLL
+   ========================================= */
+
 html {
   scroll-behavior: smooth;
+  overflow-y: scroll;
+  max-width: 100%;
 }
 
-/* Scrollbar styling */
+body {
+  margin: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+
+/* =========================================
+   NAVBAR SCROLL OFFSET
+   ========================================= */
+
+#home,
+#about,
+#features,
+#how-it-works {
+  scroll-margin-top: 90px;
+}
+
+
+/* =========================================
+   SCROLLBAR
+   ========================================= */
+
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -28,12 +60,17 @@ html {
   background: rgba(22, 131, 255, 0.7);
 }
 
-/* Global animations */
+
+/* =========================================
+   GLOBAL ANIMATIONS
+   ========================================= */
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -45,6 +82,7 @@ html {
     opacity: 0;
     transform: translateX(-30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -56,29 +94,52 @@ html {
     opacity: 0;
     transform: translateX(30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
   }
 }
 
-/* Utility classes */
+
+/* =========================================
+   CONTAINER
+   ========================================= */
+
 .container {
+  width: 100%;
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 24px;
+  box-sizing: border-box;
 }
+
+
+/* =========================================
+   SECTION TITLE
+   ========================================= */
 
 .section-title {
   font-size: 36px;
   font-weight: 700;
   color: #ffffff;
   margin: 0;
-  background: linear-gradient(135deg, #ffffff 0%, #b3d9ff 100%);
+
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #b3d9ff 100%
+  );
+
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+
+/* =========================================
+   SECTION SUBTITLE
+   ========================================= */
 
 .section-subtitle {
   font-size: 18px;
@@ -86,32 +147,118 @@ html {
   margin: 0;
 }
 
+
+/* =========================================
+   PRIMARY BUTTON
+   ========================================= */
+
 .button-primary {
   padding: 16px 40px;
+
   font-size: 16px;
   font-weight: 600;
+
   color: #ffffff;
-  background: linear-gradient(135deg, #1683ff, #00a8ff);
+
+  background: linear-gradient(
+    135deg,
+    #1683ff,
+    #00a8ff
+  );
+
   border: none;
   border-radius: 8px;
+
   cursor: pointer;
+
   transition: all 0.3s ease;
+
   box-shadow: 0 8px 24px rgba(22, 131, 255, 0.3);
+
   text-decoration: none;
+
   display: inline-block;
 }
 
 .button-primary:hover {
   transform: translateY(-2px);
+
   box-shadow: 0 12px 32px rgba(22, 131, 255, 0.4);
-  background: linear-gradient(135deg, #0d5fd4, #0090d4);
+
+  background: linear-gradient(
+    135deg,
+    #0d5fd4,
+    #0090d4
+  );
 }
 
 .button-primary:active {
   transform: translateY(0);
 }
 
-/* Responsive adjustments */
+
+/* =========================================
+   ABOUT SECTION
+   ========================================= */
+
+.about-section {
+  width: 100%;
+  min-height: 500px;
+
+  padding: 100px 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  background: #020b18;
+}
+
+.about-container {
+  width: 100%;
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  text-align: center;
+}
+
+.about-container h2 {
+  font-size: 40px;
+  font-weight: 700;
+
+  color: #ffffff;
+
+  margin: 0 0 30px 0;
+
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #b3d9ff 100%
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.about-container p {
+  font-size: 18px;
+
+  line-height: 1.7;
+
+  color: rgba(255, 255, 255, 0.75);
+
+  margin: 0 0 20px 0;
+}
+
+
+/* =========================================
+   RESPONSIVE - TABLET
+   ========================================= */
+
 @media (max-width: 1024px) {
   .section-title {
     font-size: 28px;
@@ -120,7 +267,16 @@ html {
   .section-subtitle {
     font-size: 16px;
   }
+
+  .about-container h2 {
+    font-size: 34px;
+  }
 }
+
+
+/* =========================================
+   RESPONSIVE - MOBILE
+   ========================================= */
 
 @media (max-width: 768px) {
   .container {
@@ -139,7 +295,25 @@ html {
     padding: 14px 32px;
     font-size: 15px;
   }
+
+  .about-section {
+    min-height: 450px;
+    padding: 80px 20px;
+  }
+
+  .about-container h2 {
+    font-size: 30px;
+  }
+
+  .about-container p {
+    font-size: 16px;
+  }
 }
+
+
+/* =========================================
+   RESPONSIVE - SMALL MOBILE
+   ========================================= */
 
 @media (max-width: 480px) {
   .container {
@@ -150,20 +324,326 @@ html {
     font-size: 20px;
   }
 
+  .section-subtitle {
+    font-size: 14px;
+  }
+
   .button-primary {
     padding: 12px 24px;
     font-size: 14px;
   }
+
+  .about-section {
+    min-height: 400px;
+    padding: 70px 16px;
+  }
+
+  .about-container h2 {
+    font-size: 26px;
+  }
+
+  .about-container p {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+}
+/* =========================================
+   ABOUT SECTION - FINAL TEXT OVERRIDE
+   ========================================= */
+
+.landing-page .about-section {
+  color: #ffffff;
 }
 
-/* Prevent layout shift from scrollbar */
-html {
-  overflow-y: scroll;
+.landing-page .about-label {
+  color: #4db8ff !important;
 }
 
-/* Ensure no horizontal scroll on mobile */
-body,
-html {
-  max-width: 100%;
-  overflow-x: hidden;
+.landing-page .about-heading h2 {
+  color: #ffffff !important;
+}
+
+.landing-page .about-heading p {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.landing-page .about-card {
+  color: #ffffff;
+}
+
+.landing-page .about-card h3 {
+  color: #ffffff !important;
+}
+
+.landing-page .about-card p {
+  color: rgba(255, 255, 255, 0.68) !important;
+}
+
+.landing-page .challenge-list {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.landing-page .challenge-list div {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.landing-page .solution-flow {
+  color: #8ed3ff !important;
+}
+
+.landing-page .solution-flow span {
+  color: #8ed3ff !important;
+}
+
+.landing-page .solution-flow b {
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.landing-page .tech-item strong {
+  color: #ffffff !important;
+}
+
+.landing-page .tech-item span {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+/* =========================================
+   ABOUT CARDS - FINAL VISUAL FIX
+   ========================================= */
+
+.landing-page .about-grid {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+
+  gap: 28px;
+
+  text-align: left;
+}
+
+.landing-page .about-card {
+  display: block;
+
+  min-height: 320px;
+
+  padding: 32px;
+
+  background: rgba(8, 25, 45, 0.75) !important;
+
+  border: 1px solid rgba(77, 184, 255, 0.16) !important;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+
+  color: #ffffff !important;
+}
+
+.landing-page .about-card:hover {
+  transform: translateY(-8px);
+
+  border-color: rgba(56, 189, 248, 0.45) !important;
+
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.35),
+    0 0 30px rgba(22, 131, 255, 0.08);
+}
+
+.landing-page .about-icon {
+  width: 56px;
+  height: 56px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 22px;
+
+  border-radius: 15px;
+
+  background: rgba(22, 131, 255, 0.12);
+
+  border: 1px solid rgba(56, 189, 248, 0.15);
+
+  font-size: 26px;
+}
+
+.landing-page .about-card h3 {
+  margin: 0 0 16px;
+
+  font-size: 25px;
+  font-weight: 700;
+
+  color: #ffffff !important;
+}
+
+.landing-page .about-card p {
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.68) !important;
+
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+
+/* Challenge list */
+
+.landing-page .challenge-list {
+  margin-top: 25px;
+
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+
+  gap: 12px;
+
+  text-align: left;
+}
+
+.landing-page .challenge-list div {
+  padding: 9px 12px;
+
+  border-radius: 8px;
+
+  background: rgba(255, 255, 255, 0.035);
+
+  color: rgba(255, 255, 255, 0.7) !important;
+
+  font-size: 14px;
+}
+
+
+/* Solution flow */
+
+.landing-page .solution-flow {
+  margin-top: 30px;
+
+  min-height: 55px;
+
+  display: flex !important;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+
+  padding: 12px 15px;
+
+  border-radius: 12px;
+
+  background: rgba(22, 131, 255, 0.08) !important;
+
+  border: 1px solid rgba(22, 131, 255, 0.18);
+
+  color: #8ed3ff !important;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.landing-page .solution-flow span {
+  color: #8ed3ff !important;
+}
+
+.landing-page .solution-flow b {
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+
+/* Technology strip */
+
+.landing-page .about-tech {
+  width: 100%;
+  max-width: 1100px;
+
+  margin: 55px auto 0;
+
+  padding: 25px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-around;
+
+  gap: 20px;
+
+  background: rgba(255, 255, 255, 0.02);
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  border-radius: 16px;
+}
+
+.landing-page .tech-item {
+  text-align: center;
+}
+
+.landing-page .tech-item strong {
+  color: #ffffff !important;
+
+  font-size: 20px;
+}
+
+.landing-page .tech-item span {
+  display: block;
+
+  margin-top: 5px;
+
+  color: rgba(255, 255, 255, 0.45) !important;
+
+  font-size: 12px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 1px;
+}
+
+.landing-page .tech-line {
+  width: 1px;
+  height: 35px;
+
+  background: rgba(255, 255, 255, 0.12);
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 900px) {
+  .landing-page .about-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .landing-page .about-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .landing-page .challenge-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  .landing-page .about-tech {
+    flex-wrap: wrap;
+  }
+
+  .landing-page .tech-line {
+    display: none;
+  }
+
+  .landing-page .solution-flow {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }

@@ -1,3 +1,7 @@
+/* =========================================
+   GLOBAL RESET
+   ========================================= */
+
 * {
   box-sizing: border-box;
 }
@@ -6,13 +10,29 @@ html,
 body,
 #root {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+}
+
+/* =========================================
+   PAGE SCROLLING
+   ========================================= */
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 body {
   background: #06111f;
   font-family: Arial, sans-serif;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#root {
+  min-height: 100vh;
 }

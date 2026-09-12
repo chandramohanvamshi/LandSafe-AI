@@ -10,14 +10,21 @@ html,
 body,
 #root {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
 }
 
+/* =========================================
+   GLOBAL BODY
+   ========================================= */
+
 body {
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+
   background: #020b18;
+
   font-family:
     Inter,
     system-ui,
@@ -27,7 +34,10 @@ body {
     sans-serif;
 }
 
-/* Remove default Vite styling */
+/* =========================================
+   DEFAULT ELEMENTS
+   ========================================= */
+
 button,
 input {
   font-family: inherit;
@@ -37,17 +47,22 @@ button {
   cursor: pointer;
 }
 
+
 /* =========================================
    MAIN DASHBOARD
    ========================================= */
 
 .dashboard {
   position: relative;
+
   width: 100vw;
   height: 100vh;
+
   overflow: hidden;
+
   background: #020b18;
 }
+
 
 /* =========================================
    TERRAIN CANVAS
@@ -55,17 +70,23 @@ button {
 
 .terrain-container {
   position: absolute;
+
   inset: 0;
+
   width: 100%;
   height: 100%;
 }
 
+
 /* Make Three.js canvas fill the screen */
+
 .terrain-container canvas {
   display: block;
+
   width: 100% !important;
   height: 100% !important;
 }
+
 
 /* =========================================
    LEFT CONTROL PANEL
@@ -73,6 +94,7 @@ button {
 
 .risk-panel {
   position: absolute;
+
   top: 24px;
   left: 24px;
 
@@ -82,7 +104,9 @@ button {
   padding: 24px;
 
   background: rgba(3, 13, 27, 0.92);
+
   border: 1px solid rgba(148, 163, 184, 0.25);
+
   border-radius: 16px;
 
   color: white;
@@ -92,6 +116,7 @@ button {
 
   z-index: 20;
 }
+
 
 /* =========================================
    PANEL TITLE
@@ -110,6 +135,7 @@ button {
   line-height: 1.2;
 }
 
+
 /* =========================================
    SLIDER SECTION
    ========================================= */
@@ -120,6 +146,7 @@ button {
 
 .slider-header {
   display: flex;
+
   align-items: center;
   justify-content: space-between;
 
@@ -136,6 +163,7 @@ button {
   font-weight: 700;
 }
 
+
 /* =========================================
    SLIDERS
    ========================================= */
@@ -150,6 +178,7 @@ button {
   -webkit-appearance: none;
 
   background: #e5e7eb;
+
   border-radius: 999px;
 
   outline: none;
@@ -163,6 +192,7 @@ button {
   height: 18px;
 
   border: none;
+
   border-radius: 50%;
 
   background: #1683ff;
@@ -175,12 +205,14 @@ button {
   height: 18px;
 
   border: none;
+
   border-radius: 50%;
 
   background: #1683ff;
 
   cursor: pointer;
 }
+
 
 /* =========================================
    STATISTICS
@@ -195,6 +227,7 @@ button {
 
 .risk-stat {
   display: flex;
+
   justify-content: space-between;
   align-items: center;
 
@@ -206,6 +239,7 @@ button {
 .risk-stat-value {
   font-weight: 700;
 }
+
 
 /* =========================================
    RISK LEGEND
@@ -231,6 +265,7 @@ button {
 
 .risk-legend-item {
   display: flex;
+
   align-items: center;
 
   margin: 7px 0;
@@ -263,6 +298,7 @@ button {
   background: #e63959;
 }
 
+
 /* =========================================
    SELECTED LOCATION PANEL
    ========================================= */
@@ -281,6 +317,7 @@ button {
   background: rgba(3, 13, 27, 0.92);
 
   border: 1px solid rgba(148, 163, 184, 0.25);
+
   border-radius: 16px;
 
   color: white;
@@ -291,8 +328,14 @@ button {
   z-index: 20;
 }
 
+
+/* =========================================
+   LOCATION INFORMATION
+   ========================================= */
+
 .location-title {
   display: flex;
+
   align-items: center;
 
   margin-bottom: 20px;
@@ -309,12 +352,14 @@ button {
   margin: 9px 0;
 
   font-size: 17px;
+
   line-height: 1.35;
 }
 
 .location-info strong {
   font-weight: 700;
 }
+
 
 /* =========================================
    SELECTED RISK BOX
@@ -334,6 +379,7 @@ button {
 .selected-risk strong {
   font-weight: 700;
 }
+
 
 /* =========================================
    RISK STATUS COLORS
@@ -355,18 +401,19 @@ button {
   color: #e63959;
 }
 
+
 /* =========================================
    RESPONSIVE DESIGN
    ========================================= */
 
 @media (max-width: 900px) {
   .risk-panel {
-    width: 350px;
+    width: 300px;
     padding: 18px;
   }
 
   .location-panel {
-    width: 320px;
+    width: 280px;
     padding: 18px;
   }
 
@@ -375,9 +422,16 @@ button {
   }
 }
 
+
 @media (max-width: 700px) {
+  /*
+     Allow normal page scrolling on mobile.
+     Dashboard itself still remains 100vh.
+  */
+
   body {
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .risk-panel {
@@ -402,31 +456,23 @@ button {
   }
 }
 
-@media (max-width: 900px) {
-  .risk-panel {
-    width: 300px !important;
-    padding: 18px !important;
-  }
-
-  .location-panel {
-    width: 280px !important;
-    padding: 18px !important;
-  }
-}
 
 @media (max-height: 700px) {
   .risk-panel {
     transform: scale(0.85);
+
     transform-origin: top left;
   }
 
   .location-panel {
     transform: scale(0.85);
+
     transform-origin: top right;
   }
 
   .risk-legend {
     transform: scale(0.85);
+
     transform-origin: bottom left;
   }
 }
