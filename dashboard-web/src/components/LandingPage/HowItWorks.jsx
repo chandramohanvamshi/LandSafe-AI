@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 
 import "./HowItWorks.css";
+import TerrainViewer from "../TerrainViewer";
 
 
 /* =========================================================

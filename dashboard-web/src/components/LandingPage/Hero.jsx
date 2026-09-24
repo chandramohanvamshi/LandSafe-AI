@@ -1,5 +1,7 @@
 import { forwardRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+
 import {
   ArrowRight,
   Activity,
@@ -12,9 +14,16 @@ import {
   Radio,
   ChevronDown,
 } from "lucide-react";
+
 import "./Hero.css";
 
-const Hero = forwardRef(({ onLaunch }, ref) => {
+const Hero = forwardRef((props, ref) => {
+  const navigate = useNavigate();
+
+  const handleExploreDashboard = () => {
+    navigate("/dashboard");
+  };
+
   return (
     <section className="hero-v2" ref={ref}>
 
@@ -42,7 +51,6 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
           />
         ))}
       </div>
-
 
       {/* ================= MAIN CONTENT ================= */}
 
@@ -79,7 +87,6 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
             <span>RUDRAPRAYAG</span>
           </motion.div>
 
-
           {/* Main title */}
           <motion.h1
             className="hero-v2-title"
@@ -98,7 +105,6 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
             </strong>
           </motion.h1>
 
-
           {/* Subtitle */}
           <motion.p
             className="hero-v2-subtitle"
@@ -108,7 +114,6 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
           >
             AI-POWERED LANDSLIDE EARLY WARNING SYSTEM
           </motion.p>
-
 
           {/* Description */}
           <motion.p
@@ -122,7 +127,6 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
             landslide risk zones and support faster disaster response.
           </motion.p>
 
-
           {/* Buttons */}
           <motion.div
             className="hero-v2-buttons"
@@ -131,9 +135,10 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
             transition={{ delay: 0.75 }}
           >
 
+            {/* EXPLORE DASHBOARD */}
             <button
               className="hero-main-button"
-              onClick={onLaunch}
+              onClick={handleExploreDashboard}
             >
               <Mountain size={18} />
 
@@ -142,7 +147,7 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
               <ArrowRight size={18} />
             </button>
 
-
+            {/* HOW IT WORKS */}
             <a
               href="#how-it-works"
               className="hero-video-button"
@@ -156,7 +161,6 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
 
           </motion.div>
 
-
           {/* Feature cards */}
           <motion.div
             className="hero-feature-row"
@@ -165,6 +169,7 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
             transition={{ delay: 0.9 }}
           >
 
+            {/* Terrain */}
             <div className="hero-feature">
 
               <div className="feature-icon">
@@ -178,7 +183,7 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
 
             </div>
 
-
+            {/* AI */}
             <div className="hero-feature">
 
               <div className="feature-icon">
@@ -192,7 +197,7 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
 
             </div>
 
-
+            {/* Monitoring */}
             <div className="hero-feature">
 
               <div className="feature-icon">
@@ -209,7 +214,6 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
           </motion.div>
 
         </motion.div>
-
 
         {/* ================= RIGHT ================= */}
 
@@ -247,7 +251,6 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
 
           </motion.div>
 
-
           {/* Satellite card */}
           <motion.div
             className="satellite-card"
@@ -271,7 +274,6 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
             <span className="satellite-live"></span>
 
           </motion.div>
-
 
           {/* Main risk card */}
           <motion.div
@@ -301,7 +303,6 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
 
             </div>
 
-
             {/* Main risk */}
             <div className="risk-main">
 
@@ -318,10 +319,10 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
 
               </div>
 
-
               {/* Data */}
               <div className="risk-data">
 
+                {/* Rainfall */}
                 <div className="risk-data-row">
 
                   <div>
@@ -333,7 +334,7 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
 
                 </div>
 
-
+                {/* Elevation */}
                 <div className="risk-data-row">
 
                   <div>
@@ -345,7 +346,7 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
 
                 </div>
 
-
+                {/* Slope */}
                 <div className="risk-data-row">
 
                   <div>
@@ -357,7 +358,7 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
 
                 </div>
 
-
+                {/* ML Model */}
                 <div className="risk-data-row">
 
                   <div>
@@ -372,7 +373,6 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
               </div>
 
             </div>
-
 
             {/* Warning */}
             <div className="risk-warning">
@@ -397,7 +397,6 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
 
           </motion.div>
 
-
           {/* High risk floating badge */}
           <motion.div
             className="floating-risk-tag"
@@ -418,7 +417,6 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
 
           </motion.div>
 
-
           {/* Terrain contour */}
           <div className="terrain-scan">
 
@@ -433,8 +431,8 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
 
       </div>
 
+      {/* ================= BOTTOM LOCATION ================= */}
 
-      {/* Bottom location */}
       <motion.div
         className="bottom-location"
         initial={{ opacity: 0 }}
@@ -456,8 +454,8 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
 
       </motion.div>
 
+      {/* ================= SCROLL ================= */}
 
-      {/* Scroll */}
       <motion.div
         className="hero-scroll"
         animate={{
@@ -478,5 +476,7 @@ const Hero = forwardRef(({ onLaunch }, ref) => {
     </section>
   );
 });
+
+Hero.displayName = "Hero";
 
 export default Hero;
