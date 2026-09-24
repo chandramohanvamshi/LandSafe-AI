@@ -1,205 +1,2528 @@
-.how-it-works {
+/* =========================================================
+   LANDSAFE AI
+   HOW IT WORKS
+   REALISTIC GEO-SPATIAL ANALYSIS PAGE
+   ========================================================= */
+
+.how-section {
+  position: relative;
   width: 100%;
-  padding: 80px 24px;
-  background: #020b18;
-  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  min-height: 100vh;
+  padding: 120px 0 100px;
+  overflow: hidden;
+
+  color: #edf8f7;
+
+  background:
+    radial-gradient(
+      circle at 15% 15%,
+      rgba(0, 212, 255, 0.035),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 85% 70%,
+      rgba(26, 110, 72, 0.055),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #061214 0%,
+      #071a18 50%,
+      #0a201b 100%
+    );
 }
 
-.how-it-works-container {
-  max-width: 1000px;
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+.how-background {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.how-grid {
+  position: absolute;
+  inset: 0;
+
+  opacity: 0.12;
+
+  background-image:
+    linear-gradient(
+      rgba(100, 210, 200, 0.08) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(100, 210, 200, 0.08) 1px,
+      transparent 1px
+    );
+
+  background-size: 60px 60px;
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 12%,
+    black 88%,
+    transparent
+  );
+}
+
+.how-glow {
+  position: absolute;
+
+  width: 500px;
+  height: 500px;
+
+  border-radius: 50%;
+
+  filter: blur(130px);
+
+  opacity: 0.055;
+}
+
+.how-glow-left {
+  left: -300px;
+  top: 20%;
+
+  background: #00d4ff;
+}
+
+.how-glow-right {
+  right: -300px;
+  bottom: 15%;
+
+  background: #1d8b57;
+}
+
+
+/* =========================================================
+   CONTAINER
+   ========================================================= */
+
+.how-container {
+  position: relative;
+  z-index: 2;
+
+  width: min(
+    1450px,
+    calc(100% - 70px)
+  );
+
   margin: 0 auto;
 }
 
-.how-it-works-header {
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.how-page-header {
+  max-width: 850px;
+
+  margin: 0 auto 55px;
+
   text-align: center;
-  margin-bottom: 60px;
-  animation: fadeInUp 0.8s ease-out;
 }
 
-.how-it-works-header h2 {
-  font-size: 36px;
+.how-label {
+  display: inline-flex;
+
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 13px;
+
+  border: 1px solid rgba(0, 212, 255, 0.16);
+
+  border-radius: 4px;
+
+  color: #55d7e8;
+
+  background: rgba(0, 212, 255, 0.035);
+
+  font-size: 9px;
   font-weight: 700;
-  color: #ffffff;
-  margin: 0 0 16px 0;
-  background: linear-gradient(135deg, #ffffff 0%, #b3d9ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+
+  letter-spacing: 2px;
 }
 
-.how-it-works-header p {
-  font-size: 18px;
-  color: rgba(255, 255, 255, 0.7);
-  margin: 0;
+.how-label span {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #00d4ff;
+
+  box-shadow:
+    0 0 10px rgba(0, 212, 255, 0.8);
 }
 
-.steps-timeline {
-  position: relative;
+.how-page-header h1 {
+  margin: 20px 0 17px;
+
+  font-size: clamp(
+    40px,
+    5vw,
+    64px
+  );
+
+  line-height: 1.03;
+
+  letter-spacing: -2.7px;
+
+  font-weight: 700;
+}
+
+.how-page-header h1 span {
+  color: #67d8cf;
+}
+
+.how-page-header p {
+  max-width: 700px;
+
+  margin: auto;
+
+  color: #8aa2a2;
+
+  font-size: 14px;
+
+  line-height: 1.8;
+}
+
+
+/* =========================================================
+   MAIN DASHBOARD
+   ========================================================= */
+
+.how-dashboard {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.5fr)
+    minmax(360px, 1fr);
+
+  gap: 15px;
+
+  padding: 15px;
+
+  border: 1px solid
+    rgba(125, 205, 198, 0.12);
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(12, 29, 29, 0.96),
+      rgba(5, 16, 18, 0.98)
+    );
+
+  box-shadow:
+    0 35px 100px
+      rgba(0, 0, 0, 0.3),
+
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.02);
+}
+
+.dashboard-left,
+.dashboard-right {
+  min-width: 0;
+}
+
+.dashboard-right {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 15px;
 }
 
-.step-item {
-  display: flex;
-  gap: 24px;
-  position: relative;
-  animation: fadeInUp 0.8s ease-out;
-  animation-fill-mode: both;
+
+/* =========================================================
+   TERRAIN PANEL
+   ========================================================= */
+
+.how-terrain-panel {
+  overflow: hidden;
+
+  border: 1px solid
+    rgba(135, 190, 180, 0.12);
+
+  border-radius: 8px;
+
+  background: #172825;
 }
 
-.step-item:nth-child(1) { animation-delay: 0.1s; }
-.step-item:nth-child(2) { animation-delay: 0.2s; }
-.step-item:nth-child(3) { animation-delay: 0.3s; }
-.step-item:nth-child(4) { animation-delay: 0.4s; }
-.step-item:nth-child(5) { animation-delay: 0.5s; }
+.terrain-panel-header {
+  height: 66px;
 
-.step-number {
-  flex-shrink: 0;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #1683ff, #00a8ff);
-  border: 2px solid rgba(22, 131, 255, 0.3);
+  padding: 0 18px;
+
   display: flex;
+
   align-items: center;
-  justify-content: center;
-  font-size: 24px;
+
+  justify-content: space-between;
+
+  border-bottom: 1px solid
+    rgba(130, 190, 185, 0.1);
+
+  background:
+    rgba(0, 0, 0, 0.12);
+}
+
+.terrain-title {
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+}
+
+.terrain-title-icon {
+  width: 34px;
+  height: 34px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid
+    rgba(0, 212, 255, 0.18);
+
+  border-radius: 6px;
+
+  color: #61d9e8;
+
+  background:
+    rgba(0, 212, 255, 0.045);
+}
+
+.terrain-title span {
+  display: block;
+
+  color: #617b7a;
+
+  font-size: 7px;
+
+  letter-spacing: 1.4px;
+}
+
+.terrain-title strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #d2e2df;
+
+  font-size: 10px;
+
+  letter-spacing: 0.6px;
+}
+
+.terrain-live-status {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 6px 9px;
+
+  border: 1px solid
+    rgba(70, 210, 170, 0.16);
+
+  border-radius: 4px;
+
+  color: #56ceb0;
+
+  background:
+    rgba(60, 210, 170, 0.035);
+
+  font-size: 7px;
+
   font-weight: 700;
-  color: #ffffff;
-  box-shadow: 0 8px 24px rgba(22, 131, 255, 0.2);
+
+  letter-spacing: 1px;
 }
 
-.step-content {
-  flex: 1;
-  padding-top: 8px;
+.terrain-live-status span {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #48d0a8;
+
+  box-shadow:
+    0 0 9px
+      rgba(72, 208, 168, 0.8);
 }
 
-.step-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #ffffff;
-  margin: 0 0 8px 0;
+
+/* =========================================================
+   TERRAIN MAP
+   ========================================================= */
+
+.terrain-map {
+  position: relative;
+
+  height: 570px;
+
+  overflow: hidden;
+
+  background: #273d37;
 }
 
-.step-description {
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.6;
-  margin: 0;
-}
-
-.step-connector {
+.terrain-image {
   position: absolute;
-  left: 29px;
-  top: 60px;
-  width: 2px;
-  height: 40px;
-  background: linear-gradient(180deg, rgba(22, 131, 255, 0.4), transparent);
-  pointer-events: none;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(8, 22, 21, 0.08),
+      rgba(5, 15, 16, 0.52)
+    ),
+    radial-gradient(
+      ellipse at 20% 30%,
+      #506958,
+      transparent 34%
+    ),
+    radial-gradient(
+      ellipse at 65% 30%,
+      #3e594d,
+      transparent 40%
+    ),
+    radial-gradient(
+      ellipse at 50% 80%,
+      #31463e,
+      transparent 50%
+    ),
+    linear-gradient(
+      145deg,
+      #3d574b,
+      #293e39 48%,
+      #1d302f
+    );
 }
 
-.step-item:last-child .step-connector {
-  display: none;
+
+/* =========================================================
+   MAP GRID
+   ========================================================= */
+
+.terrain-grid {
+  position: absolute;
+  inset: 0;
+
+  opacity: 0.17;
+
+  background-image:
+    linear-gradient(
+      rgba(205, 225, 209, 0.16) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(205, 225, 209, 0.16) 1px,
+      transparent 1px
+    );
+
+  background-size: 55px 55px;
 }
 
-@keyframes fadeInUp {
-  from {
+
+/* =========================================================
+   MOUNTAINS
+   ========================================================= */
+
+.terrain-mountain {
+  position: absolute;
+
+  bottom: -30px;
+
+  width: 0;
+  height: 0;
+
+  border-left:
+    270px solid transparent;
+
+  border-right:
+    270px solid transparent;
+
+  border-bottom:
+    280px solid rgba(20, 40, 37, 0.62);
+
+  filter:
+    drop-shadow(
+      0 -10px 20px
+        rgba(0, 0, 0, 0.15)
+    );
+}
+
+.mountain-1 {
+  left: -130px;
+
+  transform:
+    scale(1.2)
+    rotate(-2deg);
+
+  border-bottom-color:
+    rgba(87, 111, 91, 0.33);
+}
+
+.mountain-2 {
+  left: 250px;
+
+  transform:
+    scale(1.45)
+    rotate(1deg);
+
+  border-bottom-color:
+    rgba(50, 75, 65, 0.62);
+}
+
+.mountain-3 {
+  right: -230px;
+
+  transform:
+    scale(1.25);
+
+  border-bottom-color:
+    rgba(26, 48, 45, 0.88);
+}
+
+
+/* =========================================================
+   CONTOURS
+   ========================================================= */
+
+.terrain-contour {
+  position: absolute;
+
+  border: 1px solid
+    rgba(211, 224, 201, 0.17);
+
+  border-radius: 50%;
+
+  transform:
+    rotate(-12deg);
+}
+
+.contour-1 {
+  width: 530px;
+  height: 300px;
+
+  left: 9%;
+  top: 22%;
+}
+
+.contour-2 {
+  width: 430px;
+  height: 245px;
+
+  left: 18%;
+  top: 28%;
+}
+
+.contour-3 {
+  width: 320px;
+  height: 180px;
+
+  left: 29%;
+  top: 35%;
+}
+
+.contour-4 {
+  width: 220px;
+  height: 120px;
+
+  left: 39%;
+  top: 42%;
+}
+
+
+/* =========================================================
+   LOCATION
+   ========================================================= */
+
+.terrain-location-tag {
+  position: absolute;
+
+  left: 18px;
+  top: 18px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 8px 10px;
+
+  border: 1px solid
+    rgba(220, 240, 232, 0.14);
+
+  border-radius: 4px;
+
+  color: #d0dfdc;
+
+  background:
+    rgba(4, 14, 16, 0.72);
+
+  backdrop-filter: blur(8px);
+
+  font-size: 7px;
+
+  font-weight: 700;
+
+  letter-spacing: 1px;
+
+  z-index: 10;
+}
+
+.terrain-location-tag svg {
+  color: #58d7df;
+}
+
+.terrain-coordinates {
+  position: absolute;
+
+  right: 18px;
+  top: 18px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+
+  padding: 7px 9px;
+
+  border: 1px solid
+    rgba(220, 240, 232, 0.12);
+
+  border-radius: 4px;
+
+  color: #8ca6a2;
+
+  background:
+    rgba(4, 14, 16, 0.7);
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 7px;
+
+  z-index: 10;
+}
+
+
+/* =========================================================
+   HOTSPOTS
+   ========================================================= */
+
+.hotspot {
+  position: absolute;
+
+  width: 25px;
+  height: 25px;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  transform:
+    translate(-50%, -50%);
+
+  cursor: pointer;
+
+  z-index: 20;
+}
+
+.hotspot-pulse {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 22px;
+  height: 22px;
+
+  border-radius: 50%;
+
+  transform:
+    translate(-50%, -50%);
+
+  animation:
+    hotspotPulse
+    2.7s
+    ease-out
+    infinite;
+}
+
+.hotspot-core {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 9px;
+  height: 9px;
+
+  border-radius: 50%;
+
+  transform:
+    translate(-50%, -50%);
+
+  border: 2px solid
+    rgba(255, 255, 255, 0.85);
+
+  z-index: 2;
+}
+
+.hotspot-high .hotspot-core {
+  background: #ff4d4d;
+
+  box-shadow:
+    0 0 17px
+      rgba(255, 68, 68, 0.9);
+}
+
+.hotspot-high .hotspot-pulse {
+  background:
+    rgba(255, 68, 68, 0.28);
+}
+
+.hotspot-medium .hotspot-core {
+  background: #f3b53f;
+
+  box-shadow:
+    0 0 16px
+      rgba(243, 181, 63, 0.8);
+}
+
+.hotspot-medium .hotspot-pulse {
+  background:
+    rgba(243, 181, 63, 0.23);
+}
+
+.hotspot-low .hotspot-core {
+  background: #37c98c;
+
+  box-shadow:
+    0 0 15px
+      rgba(55, 201, 140, 0.7);
+}
+
+.hotspot-low .hotspot-pulse {
+  background:
+    rgba(55, 201, 140, 0.2);
+}
+
+@keyframes hotspotPulse {
+  0% {
+    opacity: 0.75;
+
+    transform:
+      translate(-50%, -50%)
+      scale(0.65);
+  }
+
+  70% {
     opacity: 0;
-    transform: translateY(20px);
+
+    transform:
+      translate(-50%, -50%)
+      scale(2.5);
   }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      translate(-50%, -50%)
+      scale(2.5);
+  }
+}
+
+
+/* =========================================================
+   TOOLTIP
+   ========================================================= */
+
+.hotspot-tooltip {
+  position: absolute;
+
+  left: 17px;
+  bottom: 15px;
+
+  width: 155px;
+
+  padding: 11px;
+
+  border: 1px solid
+    rgba(120, 205, 198, 0.18);
+
+  border-radius: 6px;
+
+  background:
+    rgba(5, 15, 17, 0.94);
+
+  backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 15px 35px
+      rgba(0, 0, 0, 0.35);
+
+  opacity: 0;
+
+  visibility: hidden;
+
+  transform:
+    translateY(7px);
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s ease;
+
+  pointer-events: none;
+
+  text-align: left;
+}
+
+.hotspot:hover .hotspot-tooltip,
+.hotspot-active .hotspot-tooltip {
+  opacity: 1;
+
+  visibility: visible;
+
+  transform:
+    translateY(0);
+}
+
+.tooltip-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  padding-bottom: 7px;
+
+  margin-bottom: 7px;
+
+  border-bottom: 1px solid
+    rgba(255, 255, 255, 0.07);
+}
+
+.tooltip-header span {
+  color: #587272;
+
+  font-size: 6px;
+
+  letter-spacing: 1px;
+}
+
+.tooltip-header strong {
+  font-size: 7px;
+}
+
+.hotspot-high .tooltip-header strong {
+  color: #ff7474;
+}
+
+.hotspot-medium .tooltip-header strong {
+  color: #efc15f;
+}
+
+.hotspot-low .tooltip-header strong {
+  color: #5bd39c;
+}
+
+.tooltip-row {
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-top: 6px;
+}
+
+.tooltip-row span {
+  color: #708888;
+
+  font-size: 7px;
+}
+
+.tooltip-row strong {
+  color: #d9e7e5;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 7px;
+}
+
+
+/* =========================================================
+   SCALE
+   ========================================================= */
+
+.terrain-scale {
+  position: absolute;
+
+  left: 18px;
+  bottom: 18px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  color: #c8d6d3;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 7px;
+
+  z-index: 10;
+}
+
+.scale-line {
+  display: flex;
+
+  width: 75px;
+  height: 6px;
+
+  border-top: 1px solid #d5e1dd;
+  border-bottom: 1px solid #d5e1dd;
+}
+
+.scale-line i {
+  flex: 1;
+
+  border-right:
+    1px solid #d5e1dd;
+}
+
+.scale-line i:first-child {
+  border-left:
+    1px solid #d5e1dd;
+}
+
+
+/* =========================================================
+   LEGEND
+   ========================================================= */
+
+.terrain-legend {
+  position: absolute;
+
+  right: 18px;
+  bottom: 18px;
+
+  display: flex;
+
+  gap: 11px;
+
+  padding: 8px 10px;
+
+  border: 1px solid
+    rgba(220, 240, 232, 0.12);
+
+  border-radius: 4px;
+
+  background:
+    rgba(4, 14, 16, 0.7);
+
+  backdrop-filter: blur(8px);
+
+  z-index: 10;
+}
+
+.terrain-legend div {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  color: #b6c7c3;
+
+  font-size: 6px;
+
+  letter-spacing: 0.7px;
+}
+
+.terrain-legend span {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+}
+
+.legend-low {
+  background: #37c98c;
+}
+
+.legend-medium {
+  background: #f3b53f;
+}
+
+.legend-high {
+  background: #ff4d4d;
+}
+
+
+/* =========================================================
+   ELEVATION
+   ========================================================= */
+
+.terrain-elevation {
+  position: absolute;
+
+  left: 18px;
+  top: 75px;
+
+  padding: 9px 11px;
+
+  border-left:
+    2px solid #55d8d0;
+
+  background:
+    rgba(4, 14, 16, 0.65);
+
+  backdrop-filter: blur(8px);
+
+  z-index: 10;
+}
+
+.terrain-elevation span {
+  display: block;
+
+  color: #6b8482;
+
+  font-size: 6px;
+
+  letter-spacing: 1.2px;
+}
+
+.terrain-elevation strong {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #e2eeeb;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 14px;
+}
+
+.terrain-elevation small {
+  color: #819693;
+
+  font-size: 8px;
+}
+
+
+/* =========================================================
+   CROSSHAIR
+   ========================================================= */
+
+.terrain-crosshair {
+  position: absolute;
+
+  right: 18px;
+  bottom: 76px;
+
+  width: 32px;
+  height: 32px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid
+    rgba(0, 212, 255, 0.14);
+
+  border-radius: 50%;
+
+  color: #5dd8e4;
+
+  background:
+    rgba(4, 14, 16, 0.65);
+
+  z-index: 10;
+}
+
+
+/* =========================================================
+   TERRAIN FOOTER
+   ========================================================= */
+
+.terrain-panel-footer {
+  min-height: 43px;
+
+  padding: 0 15px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  border-top:
+    1px solid
+    rgba(130, 190, 185, 0.1);
+
+  color: #607a78;
+
+  font-size: 7px;
+
+  letter-spacing: 0.8px;
+}
+
+.terrain-panel-footer div {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+}
+
+.terrain-panel-footer svg {
+  color: #51cfc3;
+}
+
+
+/* =========================================================
+   RISK ANALYSIS CARD
+   ========================================================= */
+
+.risk-analysis-card,
+.model-analysis-card,
+.risk-trend-card,
+.workflow-section {
+  border: 1px solid
+    rgba(125, 205, 198, 0.11);
+
+  border-radius: 8px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(15, 32, 33, 0.9),
+      rgba(7, 18, 20, 0.94)
+    );
+}
+
+.risk-analysis-card {
+  padding: 19px;
+}
+
+.analysis-card-header,
+.model-card-header {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  padding-bottom: 14px;
+
+  border-bottom:
+    1px solid
+    rgba(125, 205, 198, 0.08);
+}
+
+.analysis-card-header span,
+.model-card-header span,
+.trend-header > div > span,
+.workflow-heading > div > span {
+  display: block;
+
+  color: #607b79;
+
+  font-size: 7px;
+
+  letter-spacing: 1.3px;
+}
+
+.analysis-card-header h3,
+.model-card-header h3 {
+  margin: 5px 0 0;
+
+  color: #e0ecea;
+
+  font-size: 15px;
+
+  font-weight: 600;
+}
+
+.analysis-card-header svg {
+  color: #e56868;
+}
+
+
+/* =========================================================
+   RISK MAIN
+   ========================================================= */
+
+.risk-analysis-main {
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+
+  padding-top: 18px;
+}
+
+.risk-gauge {
+  position: relative;
+
+  width: 155px;
+  height: 155px;
+
+  flex-shrink: 0;
+}
+
+.risk-gauge svg {
+  width: 100%;
+  height: 100%;
+
+  transform:
+    rotate(-90deg);
+}
+
+.gauge-track {
+  fill: none;
+
+  stroke:
+    rgba(255, 255, 255, 0.055);
+
+  stroke-width: 9;
+}
+
+.gauge-progress {
+  fill: none;
+
+  stroke: #ff4f4f;
+
+  stroke-width: 9;
+
+  stroke-linecap: round;
+
+  filter:
+    drop-shadow(
+      0 0 7px
+      rgba(255, 70, 70, 0.35)
+    );
+}
+
+.gauge-center {
+  position: absolute;
+
+  inset: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+.gauge-center strong {
+  color: #f2f8f6;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 29px;
+}
+
+.gauge-center span {
+  margin-top: 2px;
+
+  color: #718986;
+
+  font-size: 6px;
+
+  letter-spacing: 1.2px;
+}
+
+
+/* =========================================================
+   RISK INFORMATION
+   ========================================================= */
+
+.risk-information {
+  flex: 1;
+}
+
+.high-risk-badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 6px 8px;
+
+  border:
+    1px solid
+    rgba(255, 76, 76, 0.2);
+
+  border-radius: 4px;
+
+  color: #f17f7f;
+
+  background:
+    rgba(255, 76, 76, 0.055);
+
+  font-size: 7px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.9px;
+}
+
+.risk-information p {
+  margin: 12px 0;
+
+  color: #809795;
+
+  font-size: 9px;
+
+  line-height: 1.65;
+}
+
+.confidence-box {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding: 10px;
+
+  border:
+    1px solid
+    rgba(85, 205, 193, 0.1);
+
+  border-radius: 5px;
+
+  background:
+    rgba(255, 255, 255, 0.012);
+}
+
+.confidence-box span {
+  display: block;
+
+  color: #607876;
+
+  font-size: 6px;
+
+  letter-spacing: 1px;
+}
+
+.confidence-box strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #68d4c8;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 12px;
+}
+
+.confidence-box > svg {
+  color: #4fc69e;
+}
+
+.prediction-time {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  margin-top: 10px;
+
+  color: #5f7775;
+
+  font-size: 6px;
+
+  letter-spacing: 0.6px;
+}
+
+.prediction-time svg {
+  color: #5f9d99;
+}
+
+.prediction-time strong {
+  margin-left: auto;
+
+  color: #9aabaa;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 7px;
+}
+
+
+/* =========================================================
+   MODEL CARD
+   ========================================================= */
+
+.model-analysis-card {
+  padding: 18px;
+}
+
+.model-active {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  color: #50cfad;
+
+  font-size: 6px;
+
+  font-weight: 700;
+
+  letter-spacing: 1px;
+}
+
+.model-active span {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #50cfad;
+
+  box-shadow:
+    0 0 8px
+      rgba(80, 207, 173, 0.8);
+}
+
+
+/* =========================================================
+   MODEL VISUAL
+   ========================================================= */
+
+.model-visual {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    115px
+    0.75fr;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 17px 0;
+}
+
+.model-input-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.model-input-item {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 7px;
+
+  border:
+    1px solid
+    rgba(125, 205, 198, 0.07);
+
+  border-radius: 4px;
+
+  background:
+    rgba(255, 255, 255, 0.01);
+}
+
+.model-input-item > span {
+  color: #405c5a;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 6px;
+}
+
+.model-input-item small {
+  display: block;
+
+  color: #536d6b;
+
+  font-size: 5px;
+
+  letter-spacing: 0.7px;
+}
+
+.model-input-item strong {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #c9d9d6;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 8px;
+}
+
+
+/* =========================================================
+   RF CORE
+   ========================================================= */
+
+.rf-core {
+  position: relative;
+
+  width: 115px;
+  height: 115px;
+
+  display: grid;
+
+  place-items: center;
+}
+
+.rf-ring {
+  position: absolute;
+
+  border:
+    1px solid
+    rgba(75, 207, 195, 0.16);
+
+  border-radius: 50%;
+}
+
+.rf-ring-one {
+  width: 108px;
+  height: 108px;
+
+  animation:
+    rfRotate
+    16s
+    linear
+    infinite;
+}
+
+.rf-ring-two {
+  width: 82px;
+  height: 82px;
+
+  border-style: dashed;
+
+  animation:
+    rfRotateReverse
+    11s
+    linear
+    infinite;
+}
+
+@keyframes rfRotate {
   to {
-    opacity: 1;
-    transform: translateY(0);
+    transform: rotate(360deg);
   }
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .how-it-works {
-    padding: 60px 24px;
-  }
-
-  .how-it-works-header h2 {
-    font-size: 28px;
-  }
-
-  .step-number {
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
-  }
-
-  .step-connector {
-    left: 24px;
+@keyframes rfRotateReverse {
+  to {
+    transform: rotate(-360deg);
   }
 }
 
-@media (max-width: 768px) {
-  .how-it-works {
-    padding: 50px 16px;
-  }
+.rf-center {
+  position: relative;
 
-  .how-it-works-header h2 {
-    font-size: 24px;
-  }
+  width: 62px;
+  height: 62px;
 
-  .how-it-works-header p {
-    font-size: 16px;
-  }
+  display: flex;
 
-  .steps-timeline {
-    gap: 32px;
-  }
+  flex-direction: column;
 
-  .step-item {
-    gap: 16px;
-  }
+  align-items: center;
 
-  .step-number {
-    width: 48px;
-    height: 48px;
-    font-size: 18px;
-  }
+  justify-content: center;
 
-  .step-title {
-    font-size: 18px;
-  }
+  border:
+    1px solid
+    rgba(81, 211, 199, 0.3);
 
-  .step-description {
-    font-size: 14px;
-  }
+  border-radius: 50%;
 
-  .step-connector {
-    left: 23px;
-    height: 32px;
-  }
+  background:
+    radial-gradient(
+      circle,
+      rgba(39, 126, 118, 0.25),
+      rgba(5, 16, 18, 0.98)
+    );
 }
 
-@media (max-width: 480px) {
-  .how-it-works {
-    padding: 40px 12px;
+.rf-center svg {
+  color: #64d8cf;
+}
+
+.rf-center strong {
+  color: #e1edeb;
+
+  font-size: 10px;
+}
+
+.rf-center small {
+  color: #56706e;
+
+  font-size: 5px;
+
+  letter-spacing: 0.8px;
+}
+
+
+/* =========================================================
+   MODEL OUTPUT
+   ========================================================= */
+
+.model-output {
+  padding-left: 10px;
+
+  border-left:
+    1px solid
+    rgba(125, 205, 198, 0.08);
+}
+
+.model-output > span {
+  color: #5d7573;
+
+  font-size: 6px;
+
+  letter-spacing: 1px;
+}
+
+.model-output > strong {
+  display: block;
+
+  margin: 5px 0;
+
+  color: #ed7070;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 27px;
+}
+
+.model-output div {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 4px;
+
+  padding: 5px 6px;
+
+  border:
+    1px solid
+    rgba(230, 100, 100, 0.17);
+
+  border-radius: 3px;
+
+  color: #ed8585;
+
+  font-size: 5px;
+
+  letter-spacing: 0.7px;
+}
+
+.model-output small {
+  display: block;
+
+  margin-top: 7px;
+
+  color: #536b69;
+
+  font-size: 6px;
+}
+
+
+/* =========================================================
+   MODEL STATS
+   ========================================================= */
+
+.model-stats {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  border-top:
+    1px solid
+    rgba(125, 205, 198, 0.08);
+}
+
+.model-stat {
+  padding: 9px;
+
+  border-bottom:
+    1px solid
+    rgba(125, 205, 198, 0.055);
+}
+
+.model-stat:nth-child(odd) {
+  border-right:
+    1px solid
+    rgba(125, 205, 198, 0.055);
+}
+
+.model-stat span {
+  display: block;
+
+  color: #526b69;
+
+  font-size: 5px;
+
+  letter-spacing: 1px;
+}
+
+.model-stat strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #c8d8d5;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 8px;
+}
+
+
+/* =========================================================
+   RISK TREND
+   ========================================================= */
+
+.risk-trend-card {
+  margin-top: 15px;
+
+  padding: 20px;
+}
+
+.trend-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+}
+
+.trend-header h3 {
+  margin: 5px 0 0;
+
+  color: #d6e4e2;
+
+  font-size: 13px;
+
+  font-weight: 500;
+}
+
+.trend-current {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  color: #ef7979;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 8px;
+}
+
+.trend-current strong {
+  font-size: 13px;
+}
+
+.trend-current span {
+  color: #617674;
+
+  font-family: inherit;
+
+  font-size: 6px;
+
+  letter-spacing: 0.8px;
+}
+
+
+/* =========================================================
+   TREND GRAPH
+   ========================================================= */
+
+.trend-chart {
+  display: flex;
+
+  height: 225px;
+}
+
+.trend-y-axis {
+  width: 32px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: space-between;
+
+  padding-bottom: 26px;
+
+  color: #506866;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 6px;
+
+  text-align: right;
+}
+
+.trend-graph {
+  position: relative;
+
+  flex: 1;
+
+  margin-left: 10px;
+}
+
+.trend-grid-line {
+  position: relative;
+
+  width: 100%;
+
+  height: 25%;
+
+  border-top:
+    1px dashed
+    rgba(130, 180, 177, 0.08);
+}
+
+.trend-svg {
+  position: absolute;
+
+  left: 0;
+  top: 0;
+
+  width: 100%;
+  height: calc(100% - 26px);
+
+  overflow: visible;
+}
+
+.trend-fill {
+  fill: url(#trendFill);
+}
+
+.trend-line {
+  fill: none;
+
+  stroke: #f06060;
+
+  stroke-width: 2;
+
+  vector-effect:
+    non-scaling-stroke;
+
+  filter:
+    drop-shadow(
+      0 0 4px
+      rgba(240, 96, 96, 0.35)
+    );
+}
+
+.trend-point {
+  position: absolute;
+
+  width: 7px;
+  height: 7px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.8);
+
+  border-radius: 50%;
+
+  background: #e95f5f;
+
+  box-shadow:
+    0 0 10px
+      rgba(233, 95, 95, 0.65);
+
+  transform:
+    translate(-50%, -50%);
+
+  z-index: 5;
+}
+
+.trend-point span {
+  position: absolute;
+
+  left: 50%;
+  bottom: 12px;
+
+  transform:
+    translateX(-50%);
+
+  color: #b0c0bd;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 6px;
+
+  white-space: nowrap;
+}
+
+.trend-final {
+  width: 9px;
+  height: 9px;
+
+  background: #ff4f4f;
+}
+
+.trend-final span {
+  color: #ff7777;
+
+  font-size: 7px;
+
+  font-weight: 700;
+}
+
+.trend-x-axis {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  color: #506866;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 6px;
+}
+
+
+/* =========================================================
+   WORKFLOW
+   ========================================================= */
+
+.workflow-section {
+  margin-top: 15px;
+
+  padding: 24px;
+}
+
+.workflow-heading {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding-bottom: 19px;
+
+  border-bottom:
+    1px solid
+    rgba(125, 205, 198, 0.08);
+}
+
+.workflow-heading h3 {
+  margin: 5px 0 0;
+
+  color: #d9e7e5;
+
+  font-size: 17px;
+
+  font-weight: 600;
+}
+
+.workflow-status {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  color: #53cdb0;
+
+  font-size: 6px;
+
+  font-weight: 700;
+
+  letter-spacing: 1px;
+}
+
+.workflow-status span {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #53cdb0;
+
+  box-shadow:
+    0 0 8px
+      rgba(83, 205, 176, 0.7);
+}
+
+.workflow-list {
+  display: grid;
+
+  grid-template-columns:
+    repeat(6, 1fr);
+
+  gap: 8px;
+
+  padding-top: 22px;
+}
+
+.workflow-item {
+  position: relative;
+
+  min-width: 0;
+
+  padding: 14px;
+
+  border:
+    1px solid
+    rgba(125, 205, 198, 0.08);
+
+  border-radius: 6px;
+
+  background:
+    rgba(255, 255, 255, 0.012);
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    background 0.3s ease;
+}
+
+.workflow-item:hover {
+  transform:
+    translateY(-4px);
+
+  border-color:
+    rgba(82, 210, 200, 0.23);
+
+  background:
+    rgba(70, 190, 180, 0.025);
+}
+
+.workflow-number {
+  color: #3e5a58;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 7px;
+
+  letter-spacing: 1px;
+}
+
+.workflow-icon {
+  width: 34px;
+  height: 34px;
+
+  margin: 13px 0;
+
+  display: grid;
+
+  place-items: center;
+
+  border:
+    1px solid
+    rgba(82, 210, 200, 0.14);
+
+  border-radius: 5px;
+
+  color: #60d2c9;
+
+  background:
+    rgba(70, 190, 180, 0.035);
+}
+
+.workflow-content > span {
+  display: block;
+
+  color: #4f6c69;
+
+  font-size: 5px;
+
+  letter-spacing: 1px;
+}
+
+.workflow-content strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #cbdad8;
+
+  font-size: 9px;
+
+  font-weight: 600;
+}
+
+.workflow-content p {
+  margin: 8px 0 0;
+
+  color: #657c7a;
+
+  font-size: 7px;
+
+  line-height: 1.6;
+}
+
+.workflow-connector {
+  position: absolute;
+
+  top: 31px;
+
+  right: -9px;
+
+  width: 10px;
+
+  height: 1px;
+
+  background:
+    rgba(76, 184, 177, 0.18);
+
+  z-index: 5;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.how-footer {
+  min-height: 50px;
+
+  margin-top: 15px;
+
+  padding: 0 20px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 24px;
+
+  border:
+    1px solid
+    rgba(125, 205, 198, 0.08);
+
+  border-radius: 6px;
+
+  background:
+    rgba(5, 16, 18, 0.55);
+
+  color: #526967;
+
+  font-size: 6px;
+
+  letter-spacing: 0.8px;
+}
+
+.how-footer > div {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+}
+
+.how-footer svg {
+  color: #4ca8a1;
+}
+
+.how-footer-location {
+  margin-left: auto;
+}
+
+
+/* =========================================================
+   LARGE DESKTOP
+   ========================================================= */
+
+@media (min-width: 1700px) {
+
+  .how-container {
+    width: min(
+      1550px,
+      calc(100% - 100px)
+    );
   }
 
-  .how-it-works-header h2 {
-    font-size: 22px;
+  .terrain-map {
+    height: 650px;
   }
 
-  .steps-timeline {
-    gap: 28px;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+  .how-container {
+    width: min(
+      94%,
+      1050px
+    );
   }
 
-  .step-item {
+  .how-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-right {
+    display: grid;
+
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+  .workflow-list {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+  .workflow-connector {
+    display: none;
+  }
+
+}
+
+
+/* =========================================================
+   TABLET / SMALL
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+  .how-section {
+    padding: 100px 0 80px;
+  }
+
+  .how-container {
+    width: calc(100% - 30px);
+  }
+
+  .dashboard-right {
+    display: flex;
+  }
+
+  .terrain-map {
+    height: 500px;
+  }
+
+  .model-visual {
+    grid-template-columns:
+      1fr
+      110px
+      0.8fr;
+  }
+
+  .workflow-list {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .how-footer {
+    flex-wrap: wrap;
+
+    padding: 14px 20px;
+  }
+
+  .how-footer-location {
+    margin-left: 0;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 650px) {
+
+  .how-section {
+    padding: 85px 0 70px;
+  }
+
+  .how-container {
+    width: calc(100% - 20px);
+  }
+
+  .how-page-header {
+    margin-bottom: 35px;
+  }
+
+  .how-page-header h1 {
+    font-size: 36px;
+
+    letter-spacing: -1.8px;
+  }
+
+  .how-page-header p {
+    font-size: 12px;
+  }
+
+  .how-dashboard {
+    padding: 8px;
+
+    gap: 8px;
+  }
+
+  .terrain-map {
+    height: 420px;
+  }
+
+  .terrain-title strong {
+    font-size: 8px;
+  }
+
+  .terrain-legend {
+    gap: 6px;
+
+    padding: 7px;
+  }
+
+  .terrain-legend div {
+    font-size: 5px;
+  }
+
+  .terrain-scale {
+    bottom: 18px;
+  }
+
+  .terrain-elevation {
+    top: 70px;
+  }
+
+  .terrain-crosshair {
+    bottom: 75px;
+  }
+
+  .risk-analysis-main {
+    flex-direction: column;
+
+    align-items: center;
+  }
+
+  .risk-information {
+    width: 100%;
+  }
+
+  .model-visual {
+    grid-template-columns: 1fr;
+  }
+
+  .rf-core {
+    margin: 5px auto;
+  }
+
+  .model-output {
+    padding: 13px 0 0;
+
+    border-left: 0;
+
+    border-top:
+      1px solid
+      rgba(125, 205, 198, 0.08);
+  }
+
+  .risk-trend-card {
+    padding: 14px;
+  }
+
+  .trend-header {
+    align-items: flex-start;
+
     gap: 12px;
   }
 
-  .step-number {
-    width: 44px;
-    height: 44px;
-    font-size: 16px;
+  .trend-header h3 {
+    font-size: 10px;
   }
 
-  .step-connector {
-    left: 21px;
+  .trend-chart {
+    height: 190px;
   }
+
+  .workflow-section {
+    padding: 17px;
+  }
+
+  .workflow-heading {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 12px;
+  }
+
+  .workflow-list {
+    grid-template-columns: 1fr;
+  }
+
+  .how-footer {
+    gap: 13px;
+  }
+
+  .how-footer > div {
+    width: 100%;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 430px) {
+
+  .terrain-map {
+    height: 360px;
+  }
+
+  .terrain-coordinates {
+    display: none;
+  }
+
+  .terrain-panel-footer {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    padding: 9px 15px;
+  }
+
+  .terrain-legend {
+    flex-direction: column;
+
+    gap: 4px;
+  }
+
+  .terrain-title-icon {
+    width: 29px;
+    height: 29px;
+  }
+
+  .terrain-title span {
+    font-size: 5px;
+  }
+
+  .terrain-title strong {
+    font-size: 7px;
+  }
+
+  .gauge-center strong {
+    font-size: 25px;
+  }
+
+  .risk-gauge {
+    width: 145px;
+    height: 145px;
+  }
+
+  .trend-current {
+    display: none;
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+
+    animation-iteration-count: 1 !important;
+
+    transition-duration: 0.01ms !important;
+  }
+
 }
