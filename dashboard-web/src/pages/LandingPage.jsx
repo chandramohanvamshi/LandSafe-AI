@@ -11,6 +11,7 @@ import Footer from "../components/LandingPage/Footer";
 import "../styles/LandingPage.css";
 
 
+
 function LandingPage() {
 
   const heroRef = useRef(null);

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = " https://landslide-backend-lv7z.onrender.com";
 
 export const predictRisk = async ({
   elevation_m,

@@ -9,7 +9,7 @@
   width: 100%;
   min-height: 100vh;
   padding: 120px 0 100px;
-  overflow: hidden;
+  overflow: visible;
 
   color: #edf8f7;
 
@@ -2526,3 +2526,37 @@
   }
 
 }
+
+/* =========================================================
+   PAGE SCROLL FIX
+   ========================================================= */
+
+html,
+body,
+#root {
+  min-height: 100%;
+  height: auto;
+}
+
+html {
+  overflow-y: auto !important;
+}
+
+body {
+  overflow-y: auto !important;
+  overflow-x: hidden;
+}
+
+#root {
+  overflow: visible !important;
+}
+
+.how-section {
+  overflow: visible !important;
+}
+
+.how-background {
+  pointer-events: none;
+  overflow: hidden;
+}
+
