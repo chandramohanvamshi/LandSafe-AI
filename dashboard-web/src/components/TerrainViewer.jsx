@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const HEIGHTMAP_URL = "/models/terrain.raw";
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://landslide-backend-lv7z.onrender.com";
 const SATELLITE_TEXTURE_URL = "/textures/rudraprayag-satellite.jpg";
 
 const RESOLUTION = 1025;
