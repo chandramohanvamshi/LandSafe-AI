@@ -1378,7 +1378,13 @@ function TerrainViewer() {
         rainGeometry.setAttribute("position", new THREE.BufferAttribute(rainPositions, 3));
         const rainPoints = new THREE.Points(
           rainGeometry,
-          new THREE.PointsMaterial({ color: 0x58dff1, size: 7, transparent: true, opacity: 0.45, depthWrite: false })
+          new THREE.PointsMaterial({
+            color: 0x58dff1,
+            size: 6,
+            transparent: true,
+            opacity: 0.45,
+            depthWrite: false
+          })
         );
         rainPoints.visible = false;
         scene.add(rainPoints);
@@ -1927,11 +1933,46 @@ function TerrainViewer() {
       }
 
       if (rainParticlesRef.current) {
-        const positions = rainParticlesRef.current.geometry.attributes.position.array;
-        for (let i = 0; i < positions.length; i += 3) {
-          positions[i + 1] -= 12 + rainfallRef.current * 0.025;
-          if (positions[i + 1] < 0) positions[i + 1] = 1300 + Math.random() * 300;
+        const rainfallValue = rainfallRef.current;
+
+        // Rain becomes visibly bigger and faster as rainfall increases.
+        // 0 mm  -> small/slow
+        // 500 mm -> large/very fast
+        const rainSize = THREE.MathUtils.lerp(
+          5,
+          28,
+          rainfallValue / 500
+        );
+
+        const rainSpeed = THREE.MathUtils.lerp(
+          8,
+          58,
+          rainfallValue / 500
+        );
+
+        const rainMaterial = rainParticlesRef.current.material;
+
+        if (rainMaterial) {
+          rainMaterial.size = rainSize;
+          rainMaterial.opacity = THREE.MathUtils.lerp(
+            0.25,
+            0.75,
+            rainfallValue / 500
+          );
         }
+
+        const positions =
+          rainParticlesRef.current.geometry.attributes.position.array;
+
+        for (let i = 0; i < positions.length; i += 3) {
+          positions[i + 1] -= rainSpeed;
+
+          if (positions[i + 1] < 0) {
+            positions[i + 1] =
+              1300 + Math.random() * 300;
+          }
+        }
+
         rainParticlesRef.current.geometry.attributes.position.needsUpdate = true;
       }
 
@@ -2249,7 +2290,7 @@ function TerrainViewer() {
           .top-control-guide .guide-item b { font-size:9px; }
           .top-control-guide .guide-separator { display:none; }
           .map-key { display:none; }
-          .hud { width:calc(100vw - 24px); min-width:0; } .hud-left { top:12px; left:12px; max-height:43dvh; } .hud-right { top:auto; right:12px; bottom:12px; max-height:43dvh; } .top-badge { display:none; } .legend { bottom:10px; } .hover-card { display:none; } }
+          .hud { width:calc(100vw - 24px); min-width:0; } .hud-left { top:12px; left:12px; max-height:43dvh; } .hud-right { top:auto; right:12px; bottom:12px; max-height:43dvh; } .top-badge { display:none; } .legend { bottom:10px; } .hover-card { display:block; } }
       `}</style>
 
       <div className="terrain-root">
@@ -2298,51 +2339,6 @@ function TerrainViewer() {
             <div className="metric"><span>Maximum Risk</span><strong>{maximumRisk.toFixed(1)}%</strong></div>
             <div className="metric"><span>Model</span><strong>Random Forest</strong></div>
             <div className="metric"><span>Updated</span><strong>{weatherTime}</strong></div>
-          </div>
-
-          <div className="section">
-            <div className="control-title"><span className="eyebrow">30-Day Replay</span><strong>Day {timelineDay}</strong></div>
-            <input className="slider" type="range" min="1" max="30" value={timelineDay} onChange={(e) => setTimelineDay(Number(e.target.value))} />
-
-            <div className="calendar">
-              {Array.from({ length: 30 }, (_, i) => {
-                const day = i + 1;
-                return (
-                  <button
-                    key={day}
-                    className={`calendar-day ${highRiskDays.includes(day) ? "high" : ""} ${day === timelineDay ? "active" : ""}`}
-                    onClick={() => setTimelineDay(day)}
-                    title={`Day ${day}${highRiskDays.includes(day) ? " · elevated-risk scenario" : ""}`}
-                  >
-                    {day}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="trend-mini subtle-card">
-              <div className="row"><span>Risk trend</span><strong>{thirtyDayRisk[29].risk > thirtyDayRisk[0].risk ? "↑ rising" : "↓ easing"}</strong></div>
-              <svg viewBox="0 0 300 62" preserveAspectRatio="none">
-                <path d={riskTrendPoints} fill="none" stroke="#ffb52e" strokeWidth="2" />
-              </svg>
-            </div>
-
-            <div className="play-row">
-              <button className="play-btn" onClick={() => setPlaybackPlaying((value) => !value)}>
-                {playbackPlaying ? "Ⅱ Pause" : "▶ Play"}
-              </button>
-              {[1, 2, 4].map((speed) => (
-                <button
-                  key={speed}
-                  className="speed-btn"
-                  onClick={() => setPlaybackSpeed(speed)}
-                  style={{ opacity: playbackSpeed === speed ? 1 : 0.55 }}
-                >
-                  {speed}×
-                </button>
-              ))}
-            </div>
-            <div className="tiny-note">Calendar and trend are a UI scenario until historical risk observations are connected.</div>
           </div>
 
           <div className="section">
@@ -2408,168 +2404,64 @@ function TerrainViewer() {
           </div>
         </div>
 
-        <div className="hud hud-right">
-          <div className="eyebrow">Selected Terrain Intelligence</div>
-          <div className="title">{selectedLocation ? "Location Analysis" : "Click the terrain"}</div>
-          <div className="muted">{selectedLocation ? "The beacon follows the selected terrain point." : "Rotate, zoom and click anywhere on the 3D terrain."}</div>
+        {selectedLocation && (
+          <div className="hover-card selected-risk-card">
+            <b>Selected Location</b>
 
-          {selectedLocation ? (
-            <>
-              <div className="risk-number">{displayedRisk.toFixed(0)}<small>% RISK</small></div>
-              <div className="risk-pill">{displayedStatus.toUpperCase()}</div>
-
-              <div className="mini-grid">
-                <div className="metric"><span>Elevation</span><strong>{selectedLocation.elevation.toFixed(1)} m</strong></div>
-                <div className="metric"><span>Slope</span><strong>{selectedLocation.slope.toFixed(1)}°</strong></div>
-                <div className="metric"><span>Rainfall</span><strong>{rainfall} mm</strong></div>
-                <div className="metric"><span>NDVI · demo</span><strong>{selectedNdvi.toFixed(2)}</strong></div>
-              </div>
-
-              <div className="subtle-card">
-                <div className="eyebrow">Prediction uncertainty</div>
-                <div className="row"><span>Estimated range</span><strong>{uncertaintyLow}% — {uncertaintyHigh}%</strong></div>
-                <div className="uncertainty">
-                  <span className="range" style={{left:`${uncertaintyLow}%`, width:`${Math.max(4, uncertaintyHigh-uncertaintyLow)}%`}} />
-                  <span className="marker" style={{left:`calc(${displayedRisk}% - 1px)`}} />
-                </div>
-                <div className="tiny-note">Range is a UI uncertainty band until calibrated model uncertainty is returned by the API.</div>
-              </div>
-
-              <div className="section">
-                <div className="eyebrow">Historical comparison</div>
-                <div className="row"><span>Same period last year</span><strong>{historicalComparison}% risk</strong></div>
-                <div className="row"><span>Current anomaly</span><strong className={anomalyDelta >= 0 ? "scenario-value" : "fresh"}>{anomalyDelta >= 0 ? "+" : ""}{anomalyDelta} pts</strong></div>
-                <div className="tiny-note">Comparison is a UI reference value until a dated historical model record is connected.</div>
-              </div>
-
-              <div className="section">
-                <div className="eyebrow">Model confidence</div>
-                <div className="row"><span>Prediction confidence</span><strong>{selectedLocation.confidence ?? 87}%</strong></div>
-                <div className="factor"><div className="factor-head"><span>Rainfall contribution</span><strong>40%</strong></div><div className="factor-track"><b style={{width:"40%"}} /></div></div>
-                <div className="factor"><div className="factor-head"><span>Slope contribution</span><strong>35%</strong></div><div className="factor-track"><b style={{width:"35%"}} /></div></div>
-                <div className="factor"><div className="factor-head"><span>Soil saturation</span><strong>25%</strong></div><div className="factor-track"><b style={{width:"25%"}} /></div></div>
-                <div className="muted">Scenario contribution weights shown here are UI factors, not Random Forest feature-importance output.</div>
-              </div>
-
-              <div className="section">
-                <div className="eyebrow">Soil composition · indicative</div>
-                <div className="soil-bar"><span className="soil-rock" style={{width:`${selectedSoil.rock}%`}} /><span className="soil-clay" style={{width:`${selectedSoil.clay}%`}} /><span className="soil-silt" style={{width:`${selectedSoil.silt}%`}} /></div>
-                <div className="row"><span>Rock / Clay / Silt</span><strong>{selectedSoil.rock}% / {selectedSoil.clay}% / {selectedSoil.silt}%</strong></div>
-              </div>
-
-              <div className="section">
-                <div className="eyebrow">Subsurface composition · indicative</div>
-                <div className="strata">
-                  <div className="stratum">
-                    <span>Rock</span>
-                    <div className="stratum-bar"><b style={{width:`${selectedSoil.rock}%`, background:"#9c7152"}} /></div>
-                    <strong>{selectedSoil.rock}%</strong>
-                  </div>
-                  <div className="stratum">
-                    <span>Clay</span>
-                    <div className="stratum-bar"><b style={{width:`${selectedSoil.clay}%`, background:"#c19a68"}} /></div>
-                    <strong>{selectedSoil.clay}%</strong>
-                  </div>
-                  <div className="stratum">
-                    <span>Silt</span>
-                    <div className="stratum-bar"><b style={{width:`${selectedSoil.silt}%`, background:"#6da99b"}} /></div>
-                    <strong>{selectedSoil.silt}%</strong>
-                  </div>
-                </div>
-                <div className="tiny-note">Thickness/mixture is indicative; saturation shading is represented by the current soil-moisture scenario.</div>
-              </div>
-
-              <div className="section">
-                <div className="eyebrow">Rainfall · previous 7 days</div>
-                <div className="chart">
-                  <svg viewBox="0 0 300 90" preserveAspectRatio="none">
-                    <defs><linearGradient id="rainFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#48dce9" stopOpacity=".3" /><stop offset="1" stopColor="#48dce9" stopOpacity="0" /></linearGradient></defs>
-                    <path d={sevenDayRain.map((v,i) => `${i===0?"M":"L"}${i*(300/6)},${82-(v/rainMax)*68}`).join(" ") + " L300,90 L0,90 Z"} fill="url(#rainFill)" />
-                    <path d={sevenDayRain.map((v,i) => `${i===0?"M":"L"}${i*(300/6)},${82-(v/rainMax)*68}`).join(" ")} fill="none" stroke="#55e0ea" strokeWidth="2.5" />
-                  </svg>
-                  <div className="chart-legend"><span>7d ago</span><span>today · {rainfall} mm</span></div>
-                </div>
-                <div className="muted">The displayed history is a UI scenario series until a real rainfall time-series source is connected.</div>
-              </div>
-
-              {showWarning && (
-                <div className="warning">
-                  <strong>⚠ EARLY WARNING · {displayedStatus.toUpperCase()}</strong>
-                  <p>Risk exceeds the selected {riskThreshold}% threshold. Contributing scenario: rainfall {rainfall} mm, slope {selectedLocation.slope.toFixed(1)}°, soil moisture {soilMoisture}%.</p>
-                </div>
-              )}
-
-              <div className="section">
-                <div className="eyebrow">Alert level history · demo</div>
-                <div className="row"><span>3h ago</span><strong>MEDIUM</strong></div>
-                <div className="row"><span>1h ago</span><strong>HIGH</strong></div>
-                <div className="row"><span>Now</span><strong>{displayedStatus.toUpperCase()}</strong></div>
-              </div>
-            </>
-          ) : (
-            <div className="section muted">Select a terrain point to reveal elevation, slope, rainfall, vegetation, soil composition and Random Forest output.</div>
-          )}
-
-          <div className="section">
-            <div className="eyebrow">Alert status evolution</div>
-            <div className="alert-timeline">
-              {alertTimeline.map((item, index) => {
-                const isCurrent = index === alertTimeline.length - 1;
-                return (
-                  <div key={item.time} className={`alert-item ${isCurrent ? "current" : ""}`}>
-                    <div className="row">
-                      <span>{item.time}</span>
-                      <strong style={{ color: isCurrent ? "#ffb52e" : "#79dcd0" }}>
-                        {item.status}{isCurrent ? " ← CURRENT" : ""}
-                      </strong>
-                    </div>
-                    <div className="tiny-note">{item.detail} · {item.value}% risk</div>
-                  </div>
-                );
-              })}
+            <div
+              style={{
+                fontSize: "28px",
+                fontWeight: 800,
+                marginTop: "6px",
+                color:
+                  selectedLocation.status === "HIGH"
+                    ? "#ff5b65"
+                    : selectedLocation.status === "MEDIUM"
+                      ? "#ffb52e"
+                      : "#4ee6c7",
+              }}
+            >
+              {selectedLocation.status} RISK
             </div>
-          </div>
 
-          <div className="section">
-            <div className="eyebrow">Infrastructure exposure</div>
-            <div className="infra-status-row"><span>Village A</span><strong style={{color:villageA.color}}>● {villageA.label}</strong></div>
-            <div className="infra-status-row"><span>Village B</span><strong style={{color:villageB.color}}>● {villageB.label}</strong></div>
-            <div className="infra-status-row"><span>Village C</span><strong style={{color:villageC.color}}>● {villageC.label}</strong></div>
-            <div className="infra-status-row"><span>Main road corridor</span><strong style={{color:roadStatus.color}}>● {roadStatus.label}</strong></div>
-            <div className="tiny-note">Exposure status is derived from the current displayed risk until asset-specific risk data is connected.</div>
-          </div>
-
-          {selectedLocation && (
-            <div className="section">
-              <div className="eyebrow">Terrain context</div>
-              <div className="row"><span>Formation</span><strong style={{maxWidth:"190px", textAlign:"right"}}>{selectedLocation.geologicalFormation}</strong></div>
-              <div className="row"><span>Last recorded event</span><strong style={{maxWidth:"190px", textAlign:"right"}}>{selectedLocation.lastEvent}</strong></div>
+            <div
+              style={{
+                fontSize: "13px",
+                color: "#dffefd",
+                marginTop: "2px",
+                marginBottom: "8px",
+              }}
+            >
+              Risk probability: <strong>{selectedLocation.risk.toFixed(0)}%</strong>
             </div>
-          )}
 
-          <div className="section">
-            <div className="row"><span>FastAPI</span><strong>{apiStatus}</strong></div>
-            <div className="row"><span>Last updated</span><strong className="fresh">{freshnessText}</strong></div>
-            <div className="row"><span>Active sensors</span><strong>23*</strong></div>
-            <div className="source-line">
-              <span className="source-chip">SRTM / DEM</span>
-              <span className="source-chip">FastAPI / Random Forest</span>
-              <span className="source-chip">Local sensors*</span>
-            </div>
-            <div className="tiny-note">*Sensor count is a UI placeholder until the live sensor feed is connected.</div>
-          </div>
-        </div>
-
-        {hoveredLocation && (
-          <div className="hover-card">
-            <b>Terrain probe</b>
             <div className="hover-grid">
-              <span>Elevation <strong>{hoveredLocation.elevation.toFixed(0)}m</strong></span>
-              <span>Slope <strong>{hoveredLocation.slope.toFixed(1)}°</strong></span>
-              <span>Risk <strong>{hoveredLocation.risk.toFixed(0)}%</strong></span>
-              <span>Grid <strong>{hoveredLocation.x},{hoveredLocation.z}</strong></span>
-              <span>Geology <strong>{hoveredLocation.geology}</strong></span>
-              <span>Event <strong>{hoveredLocation.event}</strong></span>
+              <span>
+                Elevation{" "}
+                <strong>{selectedLocation.elevation.toFixed(0)}m</strong>
+              </span>
+              <span>
+                Slope{" "}
+                <strong>{selectedLocation.slope.toFixed(1)}°</strong>
+              </span>
+              <span>
+                Rainfall{" "}
+                <strong>{selectedLocation.rainfall.toFixed(0)}mm</strong>
+              </span>
+              <span>
+                Soil moisture{" "}
+                <strong>{selectedLocation.soilMoisture.toFixed(0)}%</strong>
+              </span>
+            </div>
+
+            <div
+              style={{
+                marginTop: "8px",
+                fontSize: "8px",
+                color: "#719093",
+              }}
+            >
+              Click another point on the terrain to inspect it.
             </div>
           </div>
         )}
