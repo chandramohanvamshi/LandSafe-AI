@@ -4,7 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const HEIGHTMAP_URL = "/models/terrain.raw";
 const API_URL = "https://landslide-backend-lv7z.onrender.com";
-const SATELLITE_TEXTURE_URL = "/textures/rudraprayag-satellite.jpg";
+
 
 const RESOLUTION = 1025;
 // Keep the full 1025x1025 DEM for accurate analysis, but render a lighter
@@ -1005,24 +1005,12 @@ function TerrainViewer() {
     }
     scene.add(coordinateLines);
 
-    const terrainTexture = makeTerrainTexture();
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(
-      SATELLITE_TEXTURE_URL,
-      (texture) => {
-        texture.colorSpace = THREE.SRGBColorSpace;
-        texture.wrapS = THREE.ClampToEdgeWrapping;
-        texture.wrapT = THREE.ClampToEdgeWrapping;
-        texture.repeat.set(1, 1);
-        if (terrainRef.current?.material) terrainRef.current.material.map = texture;
-        if (terrainRef.current?.material) terrainRef.current.material.needsUpdate = true;
-      },
-      undefined,
-      () => {
-        console.info("Optional satellite texture not found. Using procedural topographic texture.");
-      }
-    );
+  const terrainTexture = makeTerrainTexture();
 
+if (terrainRef.current?.material) {
+  terrainRef.current.material.map = terrainTexture;
+  terrainRef.current.material.needsUpdate = true;
+}
     fetch(HEIGHTMAP_URL)
       .then((response) => {
         if (!response.ok) throw new Error(`Could not load terrain.raw (${response.status})`);
