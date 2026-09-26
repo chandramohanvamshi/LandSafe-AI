@@ -7,6 +7,7 @@ export const predictRisk = async ({
   slope_degrees,
   rainfall_mm_24h,
   rainfall_mm_72h,
+  soil_moisture_percent,
 }) => {
   try {
     const response = await axios.post(`${API_URL}/predict`, {
@@ -14,6 +15,7 @@ export const predictRisk = async ({
       slope_degrees,
       rainfall_mm_24h,
       rainfall_mm_72h,
+      soil_moisture_percent,
     });
 
     return response.data;
