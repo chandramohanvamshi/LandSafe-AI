@@ -4,8 +4,6 @@ import rasterio
 import os
 
 DEM_PATH = "ml/data/raw/P5_PAN_CD_N30_000_E079_000_DEM_30m.tif"
-
-
 def calculate_slope(dem, row, col, latitude, lon_pixel_size, lat_pixel_size):
 
     if row < 1 or row >= dem.shape[0] - 1:

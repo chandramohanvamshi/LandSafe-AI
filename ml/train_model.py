@@ -2,7 +2,6 @@ import pandas as pd
 import joblib
 import os
 
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, accuracy_score
 
@@ -34,9 +33,13 @@ features = [
 target = "landslide"
 
 
-# Check required columns
+# ============================================================
+# CHECK REQUIRED COLUMNS
+# ============================================================
+
 missing_columns = [
-    column for column in features + [target]
+    column
+    for column in features + [target]
     if column not in df.columns
 ]
 
@@ -46,20 +49,44 @@ if missing_columns:
     )
 
 
+# ============================================================
+# REMOVE INVALID ROWS
+# ============================================================
+
+df = df.dropna(
+    subset=features + [target]
+).copy()
+
+print("Usable records:", len(df))
+
+
+# ============================================================
+# CHECK CLASS DISTRIBUTION
+# ============================================================
+
+print("\nClass distribution:")
+print(df[target].value_counts())
+
+
+if df[target].nunique() < 2:
+    raise ValueError(
+        "Dataset must contain both classes 0 and 1."
+    )
+
+
 X = df[features]
 y = df[target]
 
 
 # ============================================================
-# TRAIN / TEST SPLIT
+# TRAIN MODEL
 # ============================================================
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    test_size=0.3,
-    random_state=42
-)
+# Current dataset is extremely small.
+# Therefore, use all available records for training.
+
+X_train = X
+y_train = y
 
 
 # ============================================================
@@ -72,33 +99,36 @@ model = RandomForestClassifier(
     class_weight="balanced"
 )
 
-model.fit(X_train, y_train)
+model.fit(
+    X_train,
+    y_train
+)
 
 
 # ============================================================
-# EVALUATION
+# TRAINING DATA CHECK
 # ============================================================
 
-y_pred = model.predict(X_test)
+y_pred = model.predict(X)
 
 accuracy = accuracy_score(
-    y_test,
+    y,
     y_pred
 )
 
 print("\n================================")
-print("MODEL EVALUATION")
+print("MODEL CHECK")
 print("================================")
 
 print(
-    f"Accuracy: {accuracy * 100:.2f}%"
+    f"Training accuracy: {accuracy * 100:.2f}%"
 )
 
 print("\nClassification Report:")
 
 print(
     classification_report(
-        y_test,
+        y,
         y_pred,
         zero_division=0
     )
@@ -120,6 +150,25 @@ for feature, importance in zip(
     print(
         f"{feature}: {importance:.3f}"
     )
+
+
+# ============================================================
+# MODEL CLASSES
+# ============================================================
+
+print("\n================================")
+print("MODEL INFORMATION")
+print("================================")
+
+print(
+    "Classes:",
+    model.classes_
+)
+
+print(
+    "Number of trees:",
+    len(model.estimators_)
+)
 
 
 # ============================================================
@@ -152,7 +201,10 @@ print("\n================================")
 print("SUCCESS!")
 print("================================")
 
-print("Model saved successfully at:")
+print(
+    "Model saved successfully at:"
+)
+
 print(model_path)
 
 print("\nModel features:")

@@ -8,7 +8,7 @@ const SATELLITE_TEXTURE_URL = "/textures/rudraprayag-satellite.jpg";
 
 const RESOLUTION = 1025;
 // Keep the full 1025x1025 DEM for accurate analysis, but render a lighter
-// 257x257 mesh for smooth real-time OrbitControls interaction.
+// 257x257 mesh for  smooth real-time OrbitControls interaction.
 const RENDER_RESOLUTION = 257;
 const TERRAIN_WIDTH = 3600;
 const TERRAIN_HEIGHT = 600;
@@ -655,12 +655,13 @@ function TerrainViewer() {
       const response = await fetch(`${API_URL}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          elevation_m: Number(location.elevation.toFixed(2)),
-          slope_degrees: Number(location.slope.toFixed(2)),
-          rainfall_mm_24h: rainfall24h,
-          rainfall_mm_72h: rainfall72h,
-        }),
+       body: JSON.stringify({
+  elevation_m: Number(location.elevation.toFixed(2)),
+  slope_degrees: Number(location.slope.toFixed(2)),
+  rainfall_mm_24h: rainfall24h,
+  rainfall_mm_72h: rainfall72h,
+  soil_moisture_percent: Number(soilMoistureRef.current),
+}),
       });
 
       if (!response.ok) throw new Error(`API returned ${response.status}`);
