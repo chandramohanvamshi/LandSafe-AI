@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const HEIGHTMAP_URL = "/models/terrain.raw";
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://landsafe-ai-api.onrender.com";
 const FLOOD_HISTORY_URL = "/data/flood_risk_dataset_india.csv";
 
 const RESOLUTION = 1025;
