@@ -76,6 +76,13 @@ else:
 
 
 # ============================================================
+# LATEST PREDICTION
+# ============================================================
+
+latest_prediction = None
+
+
+# ============================================================
 # REQUEST MODEL
 # ============================================================
 
@@ -179,6 +186,8 @@ def health():
 @app.post("/predict")
 def predict(data: FloodPredictionRequest):
 
+    global latest_prediction
+
     if model_bundle is None:
 
         raise HTTPException(
@@ -255,7 +264,11 @@ def predict(data: FloodPredictionRequest):
     )
 
 
-    return {
+    # ========================================================
+    # CREATE RESULT
+    # ========================================================
+
+    result = {
 
         "success":
             True,
@@ -289,3 +302,21 @@ def predict(data: FloodPredictionRequest):
         },
 
     }
+
+
+    # Save the latest prediction
+
+    latest_prediction = result
+
+
+    return result
+
+
+# ============================================================
+# LATEST PREDICTION
+# ============================================================
+
+@app.get("/latest")
+def get_latest():
+
+    return latest_prediction
