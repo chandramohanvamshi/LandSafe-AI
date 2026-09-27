@@ -3062,3 +3062,146 @@ a {
   }
 
 }
+
+/* =========================================================
+   SCROLL TO EXPLORE
+========================================================= */
+
+.scroll-explore {
+  position: relative;
+  margin: 34px auto 0;
+  width: fit-content;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 11px 20px;
+
+  border: 1px solid rgba(0, 212, 255, 0.22);
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(5, 25, 38, 0.92),
+      rgba(5, 18, 30, 0.72)
+    );
+
+  box-shadow:
+    0 0 25px rgba(0, 212, 255, 0.06),
+    inset 0 0 20px rgba(0, 212, 255, 0.025);
+
+  backdrop-filter: blur(12px);
+
+  color: rgba(190, 215, 225, 0.72);
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.scroll-explore:hover {
+  transform: translateY(-3px);
+
+  border-color: rgba(0, 212, 255, 0.55);
+
+  box-shadow:
+    0 0 30px rgba(0, 212, 255, 0.14),
+    inset 0 0 22px rgba(0, 212, 255, 0.04);
+}
+
+
+/* Mouse icon */
+
+.scroll-mouse {
+  position: relative;
+
+  width: 17px;
+  height: 27px;
+
+  border: 1.5px solid rgba(0, 212, 255, 0.75);
+  border-radius: 10px;
+
+  display: flex;
+  justify-content: center;
+
+  box-shadow:
+    0 0 10px rgba(0, 212, 255, 0.12);
+}
+
+
+/* Animated wheel */
+
+.scroll-wheel {
+  position: absolute;
+
+  top: 5px;
+
+  width: 3px;
+  height: 6px;
+
+  border-radius: 4px;
+
+  background: #00d4ff;
+
+  box-shadow:
+    0 0 8px rgba(0, 212, 255, 0.8);
+
+  animation: scrollWheel 1.6s ease-in-out infinite;
+}
+
+@keyframes scrollWheel {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  70% {
+    transform: translateY(8px);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(11px);
+    opacity: 0;
+  }
+}
+
+
+/* Text + arrow */
+
+.scroll-explore-text {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.scroll-arrow {
+  color: #00d4ff;
+
+  font-size: 15px;
+  line-height: 1;
+
+  animation: scrollArrow 1.5s ease-in-out infinite;
+}
+
+@keyframes scrollArrow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(4px);
+  }
+}

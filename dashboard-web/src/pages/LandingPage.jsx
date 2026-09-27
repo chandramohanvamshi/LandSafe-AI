@@ -183,36 +183,36 @@ const steps = [
   {
     icon: Satellite,
     number: "01",
-    title: "Raw DEM Terrain",
+    title: "Rainfall & Environment",
     text:
-      "Digital elevation data is transformed into terrain geometry and environmental features.",
+      "Rainfall and environmental conditions are collected as key signals for flash-flood risk analysis.",
     accent: "cyan",
   },
 
   {
     icon: BrainCircuit,
     number: "02",
-    title: "ML Analysis",
+    title: "Terrain Analysis",
     text:
-      "A Random Forest model evaluates elevation, slope and rainfall conditions.",
+      "Elevation, slope and terrain characteristics are processed to understand how water can move across the landscape.",
     accent: "teal",
   },
 
   {
     icon: Layers3,
     number: "03",
-    title: "3D Visualization",
+    title: "AI Risk Analysis",
     text:
-      "Risk information is projected onto an interactive geospatial terrain view.",
+      "Machine-learning models analyze environmental and geospatial features to estimate emerging flood risk.",
     accent: "gold",
   },
 
   {
     icon: BellRing,
     number: "04",
-    title: "Real-Time Alerts",
+    title: "Early Warning",
     text:
-      "Risk states can be surfaced for monitoring and early-warning workflows.",
+      "Risk information is presented through an interactive dashboard to support faster monitoring and response.",
     accent: "red",
   },
 ];
@@ -224,11 +224,11 @@ const steps = [
 const features = [
   {
     icon: Mountain,
-    title: "3D Terrain Visualization",
+    title: "3D Flood Terrain",
     accent: "cyan",
 
     text:
-      "Explore terrain geometry with interactive rotation, zoom, inspection and spatial risk overlays.",
+      "Explore terrain geometry and understand how elevation and slope influence potential flood-risk zones.",
 
     visual: <TerrainVisual />,
 
@@ -245,7 +245,7 @@ const features = [
     accent: "gold",
 
     text:
-      "Environmental inputs are passed through the project's Random Forest prediction pipeline.",
+      "Machine-learning analysis combines environmental and geospatial signals to identify potential flash-flood risk.",
 
     visual: (
       <div className="feature-risk-visual">
@@ -283,11 +283,11 @@ const features = [
 
   {
     icon: CloudRain,
-    title: "Environmental Monitoring",
+    title: "Rainfall Monitoring",
     accent: "teal",
 
     text:
-      "Monitor rainfall and environmental scenario inputs and see their influence on the terrain risk view.",
+      "Monitor rainfall conditions and environmental scenarios that can contribute to rapidly changing flood risk.",
 
     visual: (
       <div className="monitor-visual">
@@ -349,11 +349,11 @@ const features = [
 
   {
     icon: Map,
-    title: "Geospatial Analysis",
+    title: "Flood Risk Mapping",
     accent: "red",
 
     text:
-      "Turn terrain and environmental data into a spatial view that makes risk easier to inspect.",
+      "Transform terrain and environmental data into an interactive spatial view of potential flood-risk zones.",
 
     visual: (
       <div className="geo-visual">
@@ -643,12 +643,11 @@ export default function LandingPage() {
               }}
             >
 
-              Predicting Landslides.
+              Predicting Flash Floods.
 
-              <span>
-                {" "}Saving Lives.
-              </span>
-
+<span>
+  {" "}Saving Lives.
+</span>
             </motion.h1>
 
             <motion.p
@@ -666,10 +665,10 @@ export default function LandingPage() {
                 delay: 0.2,
               }}
             >
-              An AI-powered 3D geospatial
-              risk engine for early warning,
-              terrain analysis and environmental
-              risk monitoring.
+         An AI-powered geospatial early-warning
+system that combines rainfall, terrain,
+environmental conditions and machine
+learning to identify flash-flood risk zones.
             </motion.p>
 
             <motion.div
@@ -757,7 +756,7 @@ export default function LandingPage() {
 
             <div className="terrain-label terrain-label-one">
               <span />
-              HIGH RISK ZONE
+              FLASH FLOOD RISK
             </div>
 
           <div className="terrain-label terrain-label-two">
@@ -778,7 +777,7 @@ export default function LandingPage() {
   <div className="terrain-data-panel">
 
     <div className="terrain-data-item">
-      <span>RISK PROBABILITY</span>
+      <span>FLOOD RISK</span>
       <strong className="risk-value">82%</strong>
     </div>
 
@@ -798,7 +797,7 @@ export default function LandingPage() {
 
             <div className="hero-terrain-footer">
               <span>
-                RUDRAPRAYAG · UTTARAKHAND
+                RUDRAPRAYAG · FLOOD MONITORING
               </span>
 
               <span>
@@ -808,20 +807,21 @@ export default function LandingPage() {
 
           </motion.div>
 
-          <button
-            className="scroll-cue"
-            onClick={() =>
-              scrollTo("problem")
-            }
-          >
+        <div
+  className="scroll-explore"
+  onClick={() => scrollTo("problem")}
+  role="button"
+  tabIndex={0}
+>
+  <div className="scroll-mouse">
+    <div className="scroll-wheel"></div>
+  </div>
 
-            <span>
-              SCROLL TO EXPLORE
-            </span>
-
-            <ArrowDown size={16} />
-
-          </button>
+  <div className="scroll-explore-text">
+    <span>SCROLL TO EXPLORE</span>
+    <span className="scroll-arrow">↓</span>
+  </div>
+</div>
 
         </section>
 
@@ -842,20 +842,16 @@ export default function LandingPage() {
               THE CHALLENGE
             </span>
 
-            <h2>
-              When the mountain moves,
-              <span>
-                {" "}every second matters.
-              </span>
-            </h2>
+          <p>
+  Flash floods can develop rapidly,
+  leaving communities with very little
+  time to respond. LandSafe AI brings
+  rainfall, terrain and environmental
+  signals together to support earlier
+  risk identification.
+</p>
 
-            <p>
-              Landslides can evolve quickly
-              while conventional monitoring
-              can leave decision-makers without
-              a unified view of terrain,
-              rainfall and risk.
-            </p>
+            
 
           </Reveal>
 
@@ -868,25 +864,22 @@ export default function LandingPage() {
               </div>
 
               <h3>
-                From scattered data to
-                actionable intelligence.
+               From rainfall signals to
+actionable intelligence.
               </h3>
 
-              <p>
-                LandSafe AI brings elevation,
-                slope and rainfall-driven
-                prediction into one interactive
-                geospatial experience. Instead
-                of treating terrain as a flat map,
-                it turns the landscape into a
-                system that can be inspected in 3D.
-              </p>
+            <p>
+  LandSafe AI combines rainfall, terrain
+              characteristics and environmental
+              conditions with machine learning
+              to support flash-flood early warning.
+</p>
 
               <div className="problem-points">
 
                 <div>
                   <CheckCircle2 size={17} />
-                  Terrain-aware risk analysis
+                  Rainfall-aware risk analysis
                 </div>
 
                 <div>
@@ -896,7 +889,7 @@ export default function LandingPage() {
 
                 <div>
                   <CheckCircle2 size={17} />
-                  Designed for early-warning workflows
+                  Designed for rapid flood response
                 </div>
 
               </div>
@@ -1027,16 +1020,16 @@ export default function LandingPage() {
             </span>
 
             <h2>
-              From raw terrain to
+              From environmental data to
               <span>
                 {" "}early warning.
               </span>
             </h2>
 
             <p>
-              Four connected stages turn
-              environmental data into an
-              inspectable risk surface.
+              Four connected stages transform
+              environmental and geospatial signals
+              into an actionable flood-risk view.
             </p>
 
           </Reveal>
@@ -1110,14 +1103,14 @@ export default function LandingPage() {
             <h2>
               See the intelligence
               <span>
-                {" "}inside the terrain.
+                {" "}behind the warning.
               </span>
             </h2>
 
             <p>
-              Designed to make complex
-              geospatial signals understandable
-              at a glance.
+              Designed to make rainfall, terrain
+              and environmental signals
+              understandable at a glance.
             </p>
 
           </Reveal>
@@ -1204,16 +1197,17 @@ export default function LandingPage() {
             </span>
 
             <h2>
-              Built with
+              Built for
               <span>
-                {" "}serious engineering.
+                {" "}real-world warning systems.
               </span>
             </h2>
 
             <p>
               A modular pipeline connects
-              the frontend, geospatial processing
-              and prediction service.
+              environmental data, geospatial
+              processing, machine learning and
+              the interactive risk dashboard.
             </p>
 
           </Reveal>
@@ -1286,36 +1280,36 @@ export default function LandingPage() {
 
           <div className="architecture-pipeline">
 
-            <span>DEM</span>
-            <b>→</b>
+            <span>Rainfall</span>
+              <b>→</b>
 
-            <span>
-              Terrain Processing
-            </span>
+              <span>
+                Terrain Data
+              </span>
 
-            <b>→</b>
+              <b>→</b>
 
-            <span>
-              Feature Vector
-            </span>
+              <span>
+                Environmental Features
+              </span>
 
-            <b>→</b>
+              <b>→</b>
 
-            <span>
-              Random Forest
-            </span>
+              <span>
+                AI Risk Model
+              </span>
 
-            <b>→</b>
+              <b>→</b>
 
-            <span>
-              FastAPI
-            </span>
+              <span>
+                FastAPI
+              </span>
 
-            <b>→</b>
+              <b>→</b>
 
-            <span>
-              3D Risk View
-            </span>
+              <span>
+                Flood Risk View
+              </span>
 
           </div>
 
@@ -1459,13 +1453,14 @@ export default function LandingPage() {
               </div>
 
               <h3>
-                Terrain-first intelligence
+                Flood-aware intelligence
               </h3>
 
               <p>
-                Interactive 3D terrain keeps
-                the geography visible instead
-                of hiding risk inside a table.
+                Terrain and environmental
+                information are brought together
+                to understand changing flood-risk
+                conditions.
               </p>
 
             </Reveal>
@@ -1480,13 +1475,14 @@ export default function LandingPage() {
               </div>
 
               <h3>
-                ML-driven predictions
+                ML-driven risk analysis
               </h3>
 
               <p>
-                Environmental features are
-                passed through a Random Forest
-                classification workflow.
+                Machine learning transforms
+                environmental and geospatial
+                features into actionable
+                flood-risk information.
               </p>
 
             </Reveal>
@@ -1501,13 +1497,14 @@ export default function LandingPage() {
               </div>
 
               <h3>
-                Actionable monitoring
+                Early warning support
               </h3>
 
               <p>
-                The architecture is designed
-                around risk visibility and
-                early-warning decision support.
+                Risk information is presented
+                clearly so monitoring teams can
+                identify changing conditions
+                faster.
               </p>
 
             </Reveal>
@@ -1523,16 +1520,16 @@ export default function LandingPage() {
               </span>
 
               <h3>
-                Solving India's challenge
-                with a geospatial AI workflow.
+                Building a smarter flash-flood
+                early-warning system.
               </h3>
 
               <p>
-                LandSafe AI connects terrain
-                data, machine learning and
-                visualization into a prototype
-                built for real-world
-                disaster-management scenarios.
+                LandSafe AI combines geospatial
+                intelligence, environmental signals,
+                machine learning and interactive
+                visualization to support faster
+                flood-risk assessment.
               </p>
 
             </div>
@@ -1567,8 +1564,9 @@ export default function LandingPage() {
               <p>
                 A focused prototype combining
                 frontend engineering, geospatial
-                processing, machine learning
-                and deployment.
+                processing, machine learning and
+                deployment for flash-flood
+                early-warning scenarios.
               </p>
 
             </div>
@@ -1616,17 +1614,18 @@ export default function LandingPage() {
             </span>
 
             <h2>
-              Ready to predict the
+              Ready to detect
               <span>
-                {" "}unpredictable?
+                {" "}flood risk earlier?
               </span>
             </h2>
 
             <p>
               Explore the live terrain engine
               and see how LandSafe AI turns
-              environmental data into spatial
-              risk intelligence.
+              rainfall, terrain and environmental
+              data into spatial flood-risk
+              intelligence.
             </p>
 
             <div className="cta-actions">
@@ -1689,7 +1688,7 @@ export default function LandingPage() {
 
           <p>
             3D geospatial intelligence
-            for landslide risk monitoring.
+            for flash-flood early warning.
           </p>
 
         </div>
@@ -1745,7 +1744,7 @@ export default function LandingPage() {
           </span>
 
           <span>
-            Built for safer, smarter terrain monitoring.
+            Built for earlier, smarter flood-risk monitoring.
           </span>
 
         </div>
