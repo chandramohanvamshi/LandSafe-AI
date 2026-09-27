@@ -3,8 +3,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const HEIGHTMAP_URL = "/models/terrain.raw";
-const API_URL = "https://landslide-backend-lv7z.onrender.com";
-
+const API_URL = "http://127.0.0.1:8000";
+const FLOOD_HISTORY_URL = "/data/flood_risk_dataset_india.csv";
 
 const RESOLUTION = 1025;
 // Keep the full 1025x1025 DEM for accurate analysis, but render a lighter
@@ -14,7 +14,52 @@ const TERRAIN_WIDTH = 3600;
 const TERRAIN_HEIGHT = 600;
 const TERRAIN_DEPTH = 3600;
 const MAX_RAINFALL = 500;
-const MAX_SLOPE = 90;
+const MAX_RIVER_DISCHARGE = 2000;
+const MAX_WATER_LEVEL = 20;
+const MAX_HISTORICAL_FLOODS = 5;
+
+function parseCSVLine(line) {
+  const values = [];
+  let current = "";
+  let insideQuotes = false;
+
+  for (let i = 0; i < line.length; i += 1) {
+    const char = line[i];
+
+    if (char === '"') {
+      insideQuotes = !insideQuotes;
+    } else if (char === "," && !insideQuotes) {
+      values.push(current.trim());
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+
+  values.push(current.trim());
+  return values;
+}
+
+function parseFloodHistoryCSV(text) {
+  const lines = text
+    .split(/\r?\n/)
+    .filter((line) => line.trim().length > 0);
+
+  if (lines.length < 2) return [];
+
+  const headers = parseCSVLine(lines[0]);
+
+  return lines.slice(1).map((line) => {
+    const values = parseCSVLine(line);
+    const row = {};
+
+    headers.forEach((header, index) => {
+      row[header] = values[index];
+    });
+
+    return row;
+  });
+}
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -31,10 +76,10 @@ function hash2D(x, y) {
 }
 
 function getRiskStatus(risk) {
-  if (risk < 25) return "Low";
-  if (risk < 50) return "Moderate";
-  if (risk < 75) return "High";
-  return "Critical";
+  if (risk < 35) return "LOW";
+  if (risk < 60) return "MEDIUM";
+  if (risk < 80) return "HIGH";
+  return "CRITICAL";
 }
 
 function getRiskColor(risk) {
@@ -84,18 +129,35 @@ function getSoilComposition(slope, elevation) {
   };
 }
 
-function calculateRisk(slope, rainfall, soilMoisture, row = 0, col = 0, height = 0, neighborAverage = height) {
-  const slopeRisk = clamp((slope / MAX_SLOPE) * 100, 0, 100);
+function calculateFloodVisualRisk(
+  rainfall,
+  riverDischarge,
+  waterLevel,
+  elevation,
+  historicalFloods,
+  row = 0,
+  col = 0,
+  neighborAverage = elevation
+) {
   const rainfallRisk = clamp((rainfall / MAX_RAINFALL) * 100, 0, 100);
-  const soilRisk = clamp(soilMoisture, 0, 100);
+  const dischargeRisk = clamp((riverDischarge / MAX_RIVER_DISCHARGE) * 100, 0, 100);
+  const waterLevelRisk = clamp((waterLevel / MAX_WATER_LEVEL) * 100, 0, 100);
+  const lowElevationRisk = clamp((1 - elevation / TERRAIN_HEIGHT) * 100, 0, 100);
+  const historyRisk = clamp((historicalFloods / MAX_HISTORICAL_FLOODS) * 100, 0, 100);
+  const valleyFactor = clamp((neighborAverage - elevation) / 90, 0, 1) * 8;
+  const patch = (hash2D(row * 0.18, col * 0.18) - 0.5) * 5;
 
-  const base = slopeRisk * 0.5 + rainfallRisk * 0.3 + soilRisk * 0.2;
-  const steepCluster = smoothstep(35, 60, slope) * 7;
-  const drainageFactor = clamp((neighborAverage - height) / 90, 0, 1);
-  const drainageInfluence = drainageFactor * 8;
-  const patch = (hash2D(row * 0.18, col * 0.18) - 0.5) * 7;
-
-  return clamp(base + steepCluster + drainageInfluence + patch, 0, 100);
+  return clamp(
+    rainfallRisk * 0.35 +
+      dischargeRisk * 0.30 +
+      waterLevelRisk * 0.25 +
+      lowElevationRisk * 0.07 +
+      historyRisk * 0.03 +
+      valleyFactor +
+      patch,
+    0,
+    100
+  );
 }
 
 function formatTime() {
@@ -441,6 +503,9 @@ function makeSoftParticleTexture() {
 }
 
 
+
+
+
 function TerrainViewer() {
   const mountRef = useRef(null);
   const terrainRef = useRef(null);
@@ -464,14 +529,20 @@ function TerrainViewer() {
   const pointerRafRef = useRef(null);
   const pointerPendingRef = useRef(null);
   const isInteractingRef = useRef(false);
-  const selectedLocationRef = useRef(null);
-  const rainfallRef = useRef(120);
-  const soilMoistureRef = useRef(50);
+const selectedLocationRef = useRef(null);
+const floodHistoryDataRef = useRef([]);
+
+const rainfallRef = useRef(120);
+const riverDischargeRef = useRef(900);
+const waterLevelRef = useRef(5.2);
+const historicalFloodsRef = useRef(1);
   const sunAngleRef = useRef(135);
   const lastUpdatedAtRef = useRef(Date.now() - 120000);
 
   const [rainfall, setRainfall] = useState(120);
-  const [soilMoisture, setSoilMoisture] = useState(50);
+  const [riverDischarge, setRiverDischarge] = useState(900);
+  const [waterLevel, setWaterLevel] = useState(5.2);
+  const [historicalFloods, setHistoricalFloods] = useState(1);
   const [averageRisk, setAverageRisk] = useState(0);
   const [maximumRisk, setMaximumRisk] = useState(0);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -493,12 +564,40 @@ function TerrainViewer() {
   const [playbackPlaying, setPlaybackPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [whatIfRain, setWhatIfRain] = useState(50);
-  const [whatIfSoilDrop, setWhatIfSoilDrop] = useState(20);
+  const [whatIfDischarge, setWhatIfDischarge] = useState(300);
+
+ 
 
   useEffect(() => {
     const timer = setInterval(() => setWeatherTime(formatTime()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+  const loadFloodHistory = async () => {
+    try {
+      const response = await fetch(FLOOD_HISTORY_URL);
+
+      if (!response.ok) {
+        throw new Error(`Flood history CSV returned ${response.status}`);
+      }
+
+      const text = await response.text();
+      const data = parseFloodHistoryCSV(text);
+
+      floodHistoryDataRef.current = data;
+
+      console.log(
+        `Loaded ${data.length} flood history records`
+      );
+    } catch (error) {
+      console.error("Failed to load flood history dataset:", error);
+      floodHistoryDataRef.current = [];
+    }
+  };
+
+  loadFloodHistory();
+}, []);
 
   useEffect(() => {
     // Re-render the relative timestamp every 15 seconds without changing
@@ -533,34 +632,36 @@ function TerrainViewer() {
     return ((left + right + up + down) / 4 / 65535) * TERRAIN_HEIGHT;
   };
 
-  const riskForIndex = (index, rain = rainfallRef.current, soil = soilMoistureRef.current) => {
-    const slopes = slopesRef.current;
+  const riskForIndex = (index, rain = rainfallRef.current, discharge = riverDischargeRef.current, level = waterLevelRef.current, history = historicalFloodsRef.current) => {
     const heights = heightsRef.current;
-    if (!slopes || !heights) return 0;
+    if (!heights) return 0;
     const row = Math.floor(index / RESOLUTION);
     const col = index % RESOLUTION;
     const elevation = (heights[index] / 65535) * TERRAIN_HEIGHT;
-    return calculateRisk(
-      slopes[index],
+    return calculateFloodVisualRisk(
       rain,
-      soil,
+      discharge,
+      level,
+      elevation,
+      history,
       row,
       col,
-      elevation,
       getNeighborAverage(index)
     );
   };
 
-  const updateHeatmap = (newRainfall, newSoilMoisture) => {
+  const updateHeatmap = (
+    newRainfall,
+    newRiverDischarge,
+    newWaterLevel,
+    newHistoricalFloods
+  ) => {
     const geometry = geometryRef.current;
-    const slopes = slopesRef.current;
     const heights = heightsRef.current;
     const sourceIndices = renderSourceIndicesRef.current;
 
-    if (!geometry || !slopes || !heights || !sourceIndices) return;
+    if (!geometry || !heights || !sourceIndices) return;
 
-    // Only recolor the lightweight render mesh. The full-resolution DEM
-    // remains available in refs for accurate point analysis and API input.
     const colors = geometry.attributes.color
       ? geometry.attributes.color.array
       : new Float32Array(geometry.attributes.position.count * 3);
@@ -574,13 +675,14 @@ function TerrainViewer() {
       const col = sourceIndex % RESOLUTION;
       const elevation = (heights[sourceIndex] / 65535) * TERRAIN_HEIGHT;
 
-      const risk = calculateRisk(
-        slopes[sourceIndex],
+      const risk = calculateFloodVisualRisk(
         newRainfall,
-        newSoilMoisture,
+        newRiverDischarge,
+        newWaterLevel,
+        elevation,
+        newHistoricalFloods,
         row,
         col,
-        elevation,
         getNeighborAverage(sourceIndex)
       );
 
@@ -589,16 +691,13 @@ function TerrainViewer() {
 
       const color = getRiskColor(risk);
 
-      // DEM-derived micro-shading: darken local creases/valleys while
-      // preserving the risk hue. This is a lightweight AO-like pass.
       const relief = clamp(
         Math.abs(getNeighborAverage(sourceIndex) - elevation) / 110,
         0,
         1
       );
-      const slopeShade = 0.86 + clamp(slopes[sourceIndex] / 90, 0, 1) * 0.16;
       const valleyShade = 1 - relief * 0.24;
-      const shade = clamp(slopeShade * valleyShade, 0.58, 1.08);
+      const shade = clamp(valleyShade, 0.62, 1.08);
 
       const colorIndex = i * 3;
       colors[colorIndex] = clamp(color.r * shade, 0, 1);
@@ -618,24 +717,25 @@ function TerrainViewer() {
     const current = selectedLocationRef.current;
 
     if (current) {
-      const risk = calculateRisk(
-        current.slope,
+      const risk = calculateFloodVisualRisk(
         newRainfall,
-        newSoilMoisture,
+        newRiverDischarge,
+        newWaterLevel,
+        current.elevation,
+        newHistoricalFloods,
         current.row,
         current.col,
-        current.elevation,
         current.neighborAverage
       );
 
       const next = {
         ...current,
         rainfall: newRainfall,
-        soilMoisture: newSoilMoisture,
+        riverDischarge: newRiverDischarge,
+        waterLevel: newWaterLevel,
+        historicalFloods: newHistoricalFloods,
         risk,
         status: getRiskStatus(risk),
-        apiRisk: null,
-        apiStatus: null,
       };
 
       selectedLocationRef.current = next;
@@ -645,23 +745,68 @@ function TerrainViewer() {
     }
   };
 
+const getHistoricalFloodsForLocation = (row, col) => {
+  // DEM → approximate Rudraprayag coordinates
+  const MIN_LAT = 30.38;
+  const MAX_LAT = 30.42;
+  const MIN_LON = 78.98;
+  const MAX_LON = 79.02;
+
+  const latitude =
+    MAX_LAT -
+    (row / (RESOLUTION - 1)) * (MAX_LAT - MIN_LAT);
+
+  const longitude =
+    MIN_LON +
+    (col / (RESOLUTION - 1)) * (MAX_LON - MIN_LON);
+
+  // DEMO historical-flood zones for Rudraprayag.
+  // 1 = historical flood indicator present
+  // 0 = no historical flood indicator
+  const demoZones = [
+    { lat: 30.405, lon: 79.005, radius: 0.006 },
+    { lat: 30.395, lon: 78.995, radius: 0.005 },
+    { lat: 30.410, lon: 78.985, radius: 0.004 },
+    { lat: 30.385, lon: 79.010, radius: 0.005 },
+  ];
+
+  const insideFloodZone = demoZones.some((zone) => {
+    const distance = Math.sqrt(
+      Math.pow(latitude - zone.lat, 2) +
+      Math.pow(longitude - zone.lon, 2)
+    );
+
+    return distance <= zone.radius;
+  });
+
+  const historicalFloods = insideFloodZone ? 1 : 0;
+
+  console.log("Demo flood history:", {
+    row,
+    col,
+    latitude,
+    longitude,
+    historicalFloods,
+  });
+
+  return historicalFloods;
+};
+
   const predictWithAPI = async (location) => {
     const requestId = ++predictionRequestRef.current;
     setApiStatus("Predicting...");
 
     try {
-      const rainfall24h = rainfallRef.current;
-      const rainfall72h = Math.min(rainfall24h * 2.5, 1000);
       const response = await fetch(`${API_URL}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-       body: JSON.stringify({
-  elevation_m: Number(location.elevation.toFixed(2)),
-  slope_degrees: Number(location.slope.toFixed(2)),
-  rainfall_mm_24h: rainfall24h,
-  rainfall_mm_72h: rainfall72h,
-  soil_moisture_percent: Number(soilMoistureRef.current),
-}),
+        body: JSON.stringify({
+          rainfall_mm_24h: Number(rainfallRef.current),
+          river_discharge_m3_s: Number(riverDischargeRef.current),
+          water_level_m: Number(waterLevelRef.current),
+          elevation_m: Number(location.elevation.toFixed(2)),
+          historical_floods: Number(historicalFloodsRef.current),
+        }),
       });
 
       if (!response.ok) throw new Error(`API returned ${response.status}`);
@@ -675,8 +820,9 @@ function TerrainViewer() {
         status: result.risk_level || getRiskStatus(apiRisk),
         apiRisk,
         apiStatus: result.risk_level || getRiskStatus(apiRisk),
-        confidence: Number(result.confidence_percent ?? result.confidence ?? 87),
+        confidence: 87,
       };
+
       selectedLocationRef.current = next;
       setSelectedLocation(next);
       lastUpdatedAtRef.current = Date.now();
@@ -685,17 +831,27 @@ function TerrainViewer() {
     } catch (error) {
       console.error("Prediction API error:", error);
       if (requestId !== predictionRequestRef.current) return;
-      setApiStatus("Frontend prediction");
-      const risk = calculateRisk(
-        location.slope,
+      setApiStatus("Visual flood map");
+
+      const risk = calculateFloodVisualRisk(
         rainfallRef.current,
-        soilMoistureRef.current,
+        riverDischargeRef.current,
+        waterLevelRef.current,
+        location.elevation,
+        historicalFloodsRef.current,
         location.row,
         location.col,
-        location.elevation,
         location.neighborAverage
       );
-      const next = { ...location, risk, status: getRiskStatus(risk), apiRisk: null, apiStatus: null, confidence: 87 };
+
+      const next = {
+        ...location,
+        risk,
+        status: getRiskStatus(risk),
+        apiRisk: null,
+        apiStatus: null,
+        confidence: 87,
+      };
       selectedLocationRef.current = next;
       setSelectedLocation(next);
     }
@@ -705,18 +861,27 @@ function TerrainViewer() {
     const value = Number(event.target.value);
     rainfallRef.current = value;
     setRainfall(value);
-    updateHeatmap(value, soilMoistureRef.current);
+    updateHeatmap(value, riverDischargeRef.current, waterLevelRef.current, historicalFloodsRef.current);
     if (selectedLocationRef.current) predictWithAPI(selectedLocationRef.current);
   };
 
-  const handleSoilChange = (event) => {
+  const handleDischargeChange = (event) => {
     const value = Number(event.target.value);
-    soilMoistureRef.current = value;
-    setSoilMoisture(value);
-    predictionRequestRef.current += 1;
-    updateHeatmap(rainfallRef.current, value);
-    setApiStatus("Frontend prediction");
+    riverDischargeRef.current = value;
+    setRiverDischarge(value);
+    updateHeatmap(rainfallRef.current, value, waterLevelRef.current, historicalFloodsRef.current);
+    if (selectedLocationRef.current) predictWithAPI(selectedLocationRef.current);
   };
+
+  const handleWaterLevelChange = (event) => {
+    const value = Number(event.target.value);
+    waterLevelRef.current = value;
+    setWaterLevel(value);
+    updateHeatmap(rainfallRef.current, riverDischargeRef.current, value, historicalFloodsRef.current);
+    if (selectedLocationRef.current) predictWithAPI(selectedLocationRef.current);
+  };
+
+  
 
   const toggleLayer = (key) => {
     setLayers((current) => ({ ...current, [key]: !current[key] }));
@@ -1088,13 +1253,14 @@ if (terrainRef.current?.material) {
           const row = Math.floor(sourceIndex / RESOLUTION);
           const col = sourceIndex % RESOLUTION;
           const elevation = (heightData[sourceIndex] / 65535) * TERRAIN_HEIGHT;
-          const risk = calculateRisk(
-            slopes[sourceIndex],
+          const risk = calculateFloodVisualRisk(
             rainfallRef.current,
-            soilMoistureRef.current,
+            riverDischargeRef.current,
+            waterLevelRef.current,
+            elevation,
+            historicalFloodsRef.current,
             row,
             col,
-            elevation,
             getNeighborAverage(sourceIndex)
           );
           const color = getRiskColor(risk);
@@ -1103,8 +1269,7 @@ if (terrainRef.current?.material) {
             0,
             1
           );
-          const slopeShade = 0.86 + clamp(slopes[sourceIndex] / 90, 0, 1) * 0.16;
-          const shade = clamp(slopeShade * (1 - relief * 0.24), 0.58, 1.08);
+          const shade = clamp(1 - relief * 0.24, 0.62, 1.08);
           colors[i * 3] = clamp(color.r * shade, 0, 1);
           colors[i * 3 + 1] = clamp(color.g * shade, 0, 1);
           colors[i * 3 + 2] = clamp(color.b * shade, 0, 1);
@@ -1132,7 +1297,7 @@ if (terrainRef.current?.material) {
         scene.add(terrain);
 
         grid.position.y = terrain.position.y - 2;
-        updateHeatmap(rainfallRef.current, soilMoistureRef.current);
+        updateHeatmap(rainfallRef.current, riverDischargeRef.current, waterLevelRef.current, historicalFloodsRef.current);
 
         const riskZones = new THREE.Group();
         const riskHalos = [];
@@ -1802,10 +1967,24 @@ if (terrainRef.current?.material) {
       const index = row * RESOLUTION + col;
       const elevation = (heightsRef.current[index] / 65535) * TERRAIN_HEIGHT;
       const slope = slopesRef.current[index];
-      const neighborAverage = getNeighborAverage(index);
-      const risk = calculateRisk(slope, rainfallRef.current, soilMoistureRef.current, row, col, elevation, neighborAverage);
-      const ndvi = getNdvi(row, col, elevation, slope);
-      const soil = getSoilComposition(slope, elevation);
+const neighborAverage = getNeighborAverage(index);
+
+const locationHistoricalFloods =
+  getHistoricalFloodsForLocation(row, col);
+
+historicalFloodsRef.current = locationHistoricalFloods;
+setHistoricalFloods(locationHistoricalFloods);
+
+const risk = calculateFloodVisualRisk(
+  rainfallRef.current,
+  riverDischargeRef.current,
+  waterLevelRef.current,
+  elevation,
+  locationHistoricalFloods,
+  row,
+  col,
+  neighborAverage
+);
 
       const location = {
         x,
@@ -1815,14 +1994,14 @@ if (terrainRef.current?.material) {
         elevation,
         slope,
         rainfall: rainfallRef.current,
-        soilMoisture: soilMoistureRef.current,
+        riverDischarge: riverDischargeRef.current,
+        waterLevel: waterLevelRef.current,
+       historicalFloods: locationHistoricalFloods,
         risk,
         status: getRiskStatus(risk),
         apiRisk: null,
         apiStatus: null,
         confidence: 87,
-        ndvi,
-        soil,
         geologicalFormation: getGeologicalFormation(row, col),
         lastEvent: getLastRecordedEvent(row, col),
         worldX: hit.point.x,
@@ -2095,26 +2274,25 @@ if (terrainRef.current?.material) {
   const displayedStatus = selectedLocation ? selectedLocation.status : "—";
   const showWarning = Boolean(selectedLocation) && displayedRisk >= riskThreshold;
   const contributing = {
-    rainfall: 40,
-    slope: 35,
-    soil: 25,
+    rainfall: 35,
+    discharge: 30,
+    waterLevel: 25,
+    elevation: 10,
   };
 
   const sevenDayRain = [48, 67, 82, 74, 96, 108, rainfall];
   const rainMax = Math.max(...sevenDayRain, 120);
-  const selectedNdvi = selectedLocation?.ndvi ?? 0.68;
-  const selectedSoil = selectedLocation?.soil ?? { rock: 42, clay: 29, silt: 29 };
-
   const scenarioRainfall = clamp(rainfall + whatIfRain, 0, MAX_RAINFALL);
-  const scenarioSoil = clamp(soilMoisture - whatIfSoilDrop, 0, 100);
+  const scenarioDischarge = clamp(riverDischarge + whatIfDischarge, 0, MAX_RIVER_DISCHARGE);
   const scenarioRisk = selectedLocation
-    ? calculateRisk(
-        selectedLocation.slope,
+    ? calculateFloodVisualRisk(
         scenarioRainfall,
-        scenarioSoil,
+        scenarioDischarge,
+        waterLevel,
+        selectedLocation.elevation,
+        historicalFloods,
         selectedLocation.row,
         selectedLocation.col,
-        selectedLocation.elevation,
         selectedLocation.neighborAverage
       )
     : 0;
@@ -2314,16 +2492,24 @@ if (terrainRef.current?.material) {
 
         <div className="hud hud-left">
           <div className="status-line">
-            <div><div className="eyebrow">Early Warning Terrain Console</div><div className="title">Landslide Risk Monitor</div></div>
+            <div><div className="eyebrow">Flash Flood Early Warning Console</div><div className="title">Flash Flood Risk Monitor</div></div>
             <div className="live"><i /> LIVE</div>
           </div>
-          <div className="muted">RAW DEM terrain + Random Forest prediction + interactive environmental scenario controls.</div>
+          <div className="muted">RAW DEM terrain + Random Forest flood prediction + interactive hydrological scenario controls.</div>
 
           <div className="section">
             <div className="row"><span>Rainfall · 24h</span><strong>{rainfall} mm</strong></div>
             <input className="slider" type="range" min="0" max="500" value={rainfall} onChange={handleRainfallChange} />
-            <div className="row"><span>Soil moisture</span><strong>{soilMoisture}%</strong></div>
-            <input className="slider" type="range" min="0" max="100" value={soilMoisture} onChange={handleSoilChange} />
+
+            <div className="row"><span>River discharge</span><strong>{riverDischarge} m³/s</strong></div>
+            <input className="slider" type="range" min="0" max="2000" step="10" value={riverDischarge} onChange={handleDischargeChange} />
+
+            <div className="row"><span>Water level</span><strong>{waterLevel.toFixed(1)} m</strong></div>
+            <input className="slider" type="range" min="0" max="20" step="0.1" value={waterLevel} onChange={handleWaterLevelChange} />
+<div className="row">
+  <span>Historical floods</span>
+  <strong>{selectedLocation ? selectedLocation.historicalFloods : "—"}</strong>
+</div>
           </div>
 
           <div className="mini-grid">
@@ -2351,17 +2537,17 @@ if (terrainRef.current?.material) {
             />
 
             <div className="row">
-              <span>Soil saturation drop</span>
-              <strong className="scenario-value">-{whatIfSoilDrop}%</strong>
+              <span>River discharge +</span>
+              <strong className="scenario-value">+{whatIfDischarge} m³/s</strong>
             </div>
             <input
               className="slider"
               type="range"
               min="0"
-              max="40"
-              step="5"
-              value={whatIfSoilDrop}
-              onChange={(e) => setWhatIfSoilDrop(Number(e.target.value))}
+              max="1000"
+              step="50"
+              value={whatIfDischarge}
+              onChange={(e) => setWhatIfDischarge(Number(e.target.value))}
             />
 
             {selectedLocation && (
@@ -2370,7 +2556,7 @@ if (terrainRef.current?.material) {
                 <div className="metric"><span>What-if risk</span><strong className="scenario-value">{scenarioRisk.toFixed(0)}%</strong></div>
               </div>
             )}
-            <div className="tiny-note">What-if values are frontend scenarios; they do not overwrite the Random Forest API inputs.</div>
+            <div className="tiny-note">What-if values visualize a flood scenario locally. The selected-location prediction is still produced by the Random Forest API.</div>
           </div>
 
           <div className="section">
@@ -2406,11 +2592,13 @@ if (terrainRef.current?.material) {
                 fontWeight: 800,
                 marginTop: "6px",
                 color:
-                  selectedLocation.status === "HIGH"
-                    ? "#ff5b65"
-                    : selectedLocation.status === "MEDIUM"
-                      ? "#ffb52e"
-                      : "#4ee6c7",
+                  selectedLocation.status === "CRITICAL"
+                    ? "#ff4d5f"
+                    : selectedLocation.status === "HIGH"
+                      ? "#ff5b65"
+                      : selectedLocation.status === "MEDIUM"
+                        ? "#ffb52e"
+                        : "#4ee6c7",
               }}
             >
               {selectedLocation.status} RISK
@@ -2433,16 +2621,20 @@ if (terrainRef.current?.material) {
                 <strong>{selectedLocation.elevation.toFixed(0)}m</strong>
               </span>
               <span>
-                Slope{" "}
-                <strong>{selectedLocation.slope.toFixed(1)}°</strong>
-              </span>
-              <span>
                 Rainfall{" "}
                 <strong>{selectedLocation.rainfall.toFixed(0)}mm</strong>
               </span>
               <span>
-                Soil moisture{" "}
-                <strong>{selectedLocation.soilMoisture.toFixed(0)}%</strong>
+                River discharge{" "}
+                <strong>{selectedLocation.riverDischarge.toFixed(0)} m³/s</strong>
+              </span>
+              <span>
+                Water level{" "}
+                <strong>{selectedLocation.waterLevel.toFixed(1)}m</strong>
+              </span>
+              <span>
+                Historical floods{" "}
+                <strong>{selectedLocation.historicalFloods}</strong>
               </span>
             </div>
 

@@ -1,19 +1,35 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
 from pathlib import Path
+
 import joblib
 import pandas as pd
 
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+
 
 # ============================================================
-# APP CONFIGURATION
+# PATHS
+# ============================================================
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+
+MODEL_PATH = (
+    BASE_DIR
+    / "ml"
+    / "models"
+    / "flash_flood_model.pkl"
+)
+
+
+# ============================================================
+# FASTAPI APP
 # ============================================================
 
 app = FastAPI(
-    title="Rudraprayag Landslide Early Warning System API",
-    description="Machine Learning based landslide risk prediction API",
-    version="1.0.0"
+    title="LandSafe AI Flash Flood Early Warning API",
+    description="ML service for flash-flood risk estimation.",
+    version="2.0.0",
 )
 
 
@@ -31,293 +47,245 @@ app.add_middleware(
 
 
 # ============================================================
-# MODEL PATH
+# LOAD MODEL
 # ============================================================
 
-BASE_DIR = Path(__file__).resolve().parents[2]
-
-MODEL_PATH = BASE_DIR / "ml" / "models" / "saved_model.pkl"
-
-model = None
-
-
-# ============================================================
-# LOAD RANDOM FOREST MODEL
-# ============================================================
+model_bundle = None
 
 if MODEL_PATH.exists():
-    try:
-        model = joblib.load(MODEL_PATH)
-        print("SUCCESS: Random Forest model loaded!")
-        print(f"Model path: {MODEL_PATH}")
 
-    except Exception as e:
-        print(f"ERROR loading model: {e}")
+    try:
+
+        model_bundle = joblib.load(MODEL_PATH)
+
+        print(
+            f"SUCCESS: Flash-flood model loaded from {MODEL_PATH}"
+        )
+
+    except Exception as exc:
+
+        print(
+            f"ERROR loading flash-flood model: {exc}"
+        )
 
 else:
-    print("WARNING: Model file not found!")
-    print(f"Expected path: {MODEL_PATH}")
+
+    print(
+        f"WARNING: Model not found: {MODEL_PATH}"
+    )
 
 
 # ============================================================
 # REQUEST MODEL
 # ============================================================
 
-class RiskPredictionRequest(BaseModel):
+class FloodPredictionRequest(BaseModel):
 
-    elevation_m: float = Field(
-        ...,
-        description="Elevation above sea level in meters"
-    )
+    rainfall_mm_24h: float = Field(..., ge=0)
 
-    slope_degrees: float = Field(
-        ...,
-        description="Slope angle in degrees"
-    )
+    river_discharge_m3_s: float = Field(..., ge=0)
 
-    rainfall_mm_24h: float = Field(
-        ...,
-        description="Rainfall during last 24 hours in mm"
-    )
+    water_level_m: float = Field(..., ge=0)
 
-    rainfall_mm_72h: float = Field(
-        ...,
-        description="Rainfall during last 72 hours in mm"
-    )
+    elevation_m: float = Field(..., ge=0)
 
-    soil_moisture_percent: float = Field(
-        ...,
-        description="Soil moisture percentage"
-    )
+    historical_floods: int = Field(..., ge=0)
 
 
 # ============================================================
-# ROOT ENDPOINT
+# RISK LEVEL
+# ============================================================
+
+def risk_level(probability: float) -> str:
+
+    if probability < 35:
+        return "LOW"
+
+    if probability < 60:
+        return "MEDIUM"
+
+    if probability < 80:
+        return "HIGH"
+
+    return "CRITICAL"
+
+
+# ============================================================
+# ROOT
 # ============================================================
 
 @app.get("/")
-def read_root():
+def root():
 
     return {
-        "system": "Rudraprayag Landslide Early Warning System",
-        "status": "running",
-        "version": "1.0.0",
-        "model_loaded": model is not None,
-        "model_type": "Random Forest",
+
+        "system":
+            "LandSafe AI Flash Flood Early Warning System",
+
+        "status":
+            "running",
+
+        "model_loaded":
+            model_bundle is not None,
+
+        "model_type":
+            "Random Forest",
+
         "features": [
-            "elevation_m",
-            "slope_degrees",
+
             "rainfall_mm_24h",
-            "rainfall_mm_72h",
-            "soil_moisture_percent"
-        ]
+
+            "river_discharge_m3_s",
+
+            "water_level_m",
+
+            "elevation_m",
+
+            "historical_floods",
+
+        ],
+
+        "dataset_note":
+            "Prototype model trained on an India-wide "
+            "synthetic flood-risk dataset."
+
     }
 
 
 # ============================================================
-# HEALTH CHECK
+# HEALTH
 # ============================================================
 
 @app.get("/health")
-def health_check():
-
-    if model is None:
-
-        return {
-            "status": "warning",
-            "model_loaded": False,
-            "message": "API is running but ML model is not loaded"
-        }
+def health():
 
     return {
-        "status": "healthy",
-        "model_loaded": True,
-        "message": "API and ML model are ready"
+
+        "status":
+            "healthy"
+            if model_bundle is not None
+            else "warning",
+
+        "model_loaded":
+            model_bundle is not None,
+
     }
 
 
 # ============================================================
-# PREDICT RISK
+# PREDICT
 # ============================================================
 
 @app.post("/predict")
-def predict_risk(data: RiskPredictionRequest):
+def predict(data: FloodPredictionRequest):
 
-    # --------------------------------------------------------
-    # Check model
-    # --------------------------------------------------------
-
-    if model is None:
+    if model_bundle is None:
 
         raise HTTPException(
+
             status_code=503,
-            detail="ML model is not loaded"
+
+            detail=
+                "Flash-flood ML model is not loaded.",
+
         )
 
 
-    # --------------------------------------------------------
-    # Validate input values
-    # --------------------------------------------------------
+    model = model_bundle["model"]
 
-    if data.elevation_m < 0:
-
-        raise HTTPException(
-            status_code=400,
-            detail="Elevation cannot be negative"
-        )
+    features = model_bundle["features"]
 
 
-    if data.slope_degrees < 0 or data.slope_degrees > 90:
+    # Create input row using the SAME column names
+    # used during model training.
 
-        raise HTTPException(
-            status_code=400,
-            detail="Slope must be between 0 and 90 degrees"
-        )
+    row = pd.DataFrame([{
 
+        "Rainfall (mm)":
+            data.rainfall_mm_24h,
 
-    if data.rainfall_mm_24h < 0:
+        "River Discharge (m³/s)":
+            data.river_discharge_m3_s,
 
-        raise HTTPException(
-            status_code=400,
-            detail="24-hour rainfall cannot be negative"
-        )
+        "Water Level (m)":
+            data.water_level_m,
 
+        "Elevation (m)":
+            data.elevation_m,
 
-    if data.rainfall_mm_72h < 0:
+        "Historical Floods":
+            data.historical_floods,
 
-        raise HTTPException(
-            status_code=400,
-            detail="72-hour rainfall cannot be negative"
-        )
+    }])[features]
 
-
-    if data.soil_moisture_percent < 0 or data.soil_moisture_percent > 100:
-
-        raise HTTPException(
-            status_code=400,
-            detail="Soil moisture must be between 0 and 100 percent"
-        )
-
-
-    # --------------------------------------------------------
-    # Prepare ML input
-    # --------------------------------------------------------
-
-    input_features = pd.DataFrame([
-        {
-            "elevation_m": data.elevation_m,
-            "slope_degrees": data.slope_degrees,
-            "rainfall_mm_24h": data.rainfall_mm_24h,
-            "rainfall_mm_72h": data.rainfall_mm_72h,
-            "soil_moisture_percent": data.soil_moisture_percent
-        }
-    ])
-
-
-    # --------------------------------------------------------
-    # ML PREDICTION
-    # --------------------------------------------------------
 
     try:
 
+        probability = float(
+
+            model.predict_proba(row)[0][1]
+
+            * 100
+
+        )
+
         prediction = int(
-            model.predict(input_features)[0]
+
+            model.predict(row)[0]
+
         )
 
-
-        # ----------------------------------------------------
-        # Probability
-        # ----------------------------------------------------
-
-        probabilities = model.predict_proba(
-            input_features
-        )[0]
-
-
-        # Find probability corresponding to landslide = 1
-
-        classes = list(model.classes_)
-
-        if 1 in classes:
-
-            landslide_index = classes.index(1)
-
-            risk_probability = (
-                probabilities[landslide_index] * 100
-            )
-
-        else:
-
-            risk_probability = 0.0
-
-
-        # Keep value between 0 and 100
-
-        risk_probability = max(
-            0.0,
-            min(100.0, risk_probability)
-        )
-
-
-        # ----------------------------------------------------
-        # Risk level
-        # ----------------------------------------------------
-
-        if risk_probability < 35:
-
-            risk_level = "LOW"
-
-        elif risk_probability < 70:
-
-            risk_level = "MEDIUM"
-
-        elif risk_probability < 85:
-
-            risk_level = "HIGH"
-
-        else:
-
-            risk_level = "CRITICAL"
-
-
-        # ----------------------------------------------------
-        # Final response
-        # ----------------------------------------------------
-
-        return {
-
-            "success": True,
-
-            "landslide_predicted": prediction,
-
-            "risk_probability_percent": round(
-                risk_probability,
-                2
-            ),
-
-            "risk_level": risk_level,
-
-            "features": {
-
-                "elevation_m": data.elevation_m,
-
-                "slope_degrees": data.slope_degrees,
-
-                "rainfall_mm_24h": data.rainfall_mm_24h,
-
-                "rainfall_mm_72h": data.rainfall_mm_72h,
-
-                "soil_moisture_percent":
-                    data.soil_moisture_percent
-            }
-        }
-
-
-    except Exception as e:
-
-        print(f"Prediction error: {e}")
+    except Exception as exc:
 
         raise HTTPException(
+
             status_code=500,
-            detail=f"Prediction failed: {str(e)}"
+
+            detail=f"Prediction failed: {exc}",
+
         )
+
+
+    probability = max(
+
+        0.0,
+
+        min(100.0, probability)
+
+    )
+
+
+    return {
+
+        "success":
+            True,
+
+        "flood_predicted":
+            prediction,
+
+        "risk_probability_percent":
+            round(probability, 2),
+
+        "risk_level":
+            risk_level(probability),
+
+        "features": {
+
+            "rainfall_mm_24h":
+                data.rainfall_mm_24h,
+
+            "river_discharge_m3_s":
+                data.river_discharge_m3_s,
+
+            "water_level_m":
+                data.water_level_m,
+
+            "elevation_m":
+                data.elevation_m,
+
+            "historical_floods":
+                data.historical_floods,
+
+        },
+
+    }
